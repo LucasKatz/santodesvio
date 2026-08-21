@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 
+const rawBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+const baseUrl = rawBaseUrl.trim().replace(/\/$/, '');
+
 export async function POST(req) {
   try {
     const { name, lastName, dni, email } = await req.json();
@@ -8,7 +11,7 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Faltan datos obligatorios' }, { status: 400 });
     }
 
-    const preferenceData = {
+  const preferenceData = {
       items: [
         {
           title: 'Entrada Santo Desvío Festival',
@@ -19,10 +22,12 @@ export async function POST(req) {
       ],
       payer: { name, surname: lastName, email },
       metadata: { dni, name, lastName, email },
+      // OBLIGATORIO EN SANDBOX: Le dice a MP dónde enviar el webhook de este pago
+      notification_url: `${baseUrl}/api/webhooks/mercadopago`, 
       back_urls: {
-        success: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/festival/ticket`,
-        failure: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/festival?status=failure`,
-        pending: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/festival?status=pending`,
+        success: `${baseUrl}/festival/ticket`,
+        failure: `${baseUrl}/festival?status=failure`,
+        pending: `${baseUrl}/festival?status=pending`,
       },
       auto_return: 'approved',
     };
