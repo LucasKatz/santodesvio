@@ -25,10 +25,17 @@ export default function FestivalPage() {
       });
 
       const data = await res.json();
+      console.log('Respuesta recibida de create-preference:', data);
+
       if (data.init_point) {
-        window.location.href = data.init_point; // Redirección a MercadoPago
+        console.log('Redirigiendo a:', data.init_point);
+        window.location.assign(data.init_point); // Utiliza assign para asegurar la redirección del navegador
+      } else {
+        console.error('El servidor respondió pero falta init_point en la respuesta:', data);
+        alert(`No se pudo obtener la URL de pago. Error: ${data.error || 'Respuesta incompleta'}`);
       }
     } catch (err) {
+      console.error('Error de red o procesamiento:', err);
       alert('Ocurrió un error al conectar con MercadoPago');
     } finally {
       setLoading(false);

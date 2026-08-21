@@ -8,12 +8,11 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Faltan datos obligatorios' }, { status: 400 });
     }
 
-    // Configuración de la preferencia en MercadoPago
     const preferenceData = {
       items: [
         {
           title: 'Entrada Santo Desvío Festival',
-          unit_price: 15000, // Precio predeterminado
+          unit_price: 15000,
           quantity: 1,
           currency_id: 'ARS',
         },
@@ -38,8 +37,22 @@ export async function POST(req) {
     });
 
     const data = await response.json();
-    return NextResponse.json({ init_point: data.init_point });
+
+    // SI MERCADOPAGO DEVUELVE ERROR:
+    if (!response.ok) {
+      console.error('--- ERROR DE MERCADOPAGO ---');
+      console.error(JSON.stringify(data, null, 2));
+      console.error('-----------------------------');
+      return NextResponse.json({ error: data.message || 'Error en MercadoPago' }, { status: response.status });
+    }
+
+    // RETORNA LA URL DE SANDBOX DIRECTA
+    return NextResponse.json({ 
+      init_point: data.sandbox_init_point || data.init_point 
+    });
+
   } catch (error) {
-    return NextResponse.json({ error: 'Error al procesar el pago' }, { status: 500 });
+    console.error('Error interno del servidor:', error);
+    return NextResponse.json({ error: 'Error interno al procesar el pago' }, { status: 500 });
   }
 }
