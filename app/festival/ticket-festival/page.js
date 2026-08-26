@@ -5,7 +5,7 @@ import { useEffect, useState, Suspense } from 'react';
 import Navbar from '@/components/UserInt/navbar';
 import Footer from '@/components/UserInt/footer';
 import TicketCardUI from '@/components/Festival/TicketCardUI';
-import { generateTicketCode, generateQRCode } from '@/services/ticketService';
+import { generateQRCode, generateTicketCode } from '@/app/services/ticketService';
 
 function TicketContent() {
   const searchParams = useSearchParams();
