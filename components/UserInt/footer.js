@@ -33,7 +33,7 @@ export default function Footer() {
           <div className="flex items-center gap-5 text-[#F2A21B]">
             {/* WhatsApp */}
             <a
-              href="https://wa.me/54911"
+              href="https://wa.me/5491178202532"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="WhatsApp"
