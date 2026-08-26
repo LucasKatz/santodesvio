@@ -9,8 +9,8 @@ export default function Navbar() {
           
           {/* Enlaces Izquierda */}
           <div className="flex items-center gap-8 font-santo-alt text-lg md:text-xl text-white tracking-wider uppercase pl-6">
-            <a href="#cervezas" className="hover:text-santo-ochre transition-colors">Nuestras Birras</a>
-            <a href="#fabrica" className="hover:text-santo-ochre transition-colors">La Fábrica</a>
+            <a href="birras" className="hover:text-santo-ochre transition-colors">Nuestras Birras</a>
+            <a href="fabrica" className="hover:text-santo-ochre transition-colors">La Fábrica</a>
           </div>
 
           {/* Logo Central Flotante (sobresale por debajo del header) */}
@@ -28,9 +28,9 @@ export default function Navbar() {
 
           {/* Enlaces Derecha */}
           <div className="flex items-center gap-8 font-santo-alt text-lg md:text-xl text-white tracking-wider uppercase pr-6">
-            <a href="#merch" className="hover:text-santo-ochre transition-colors">Merch</a>
-            <a href="#merch" className="hover:text-santo-ochre transition-colors">Merch</a>
-            <a href="#contacto" className="hover:text-santo-ochre transition-colors">Contacto</a>
+            <a href="festival" className="hover:text-santo-ochre transition-colors">Eventos</a>
+            <a href="merch" className="hover:text-santo-ochre transition-colors">Merch</a>
+            <a href="contacto" className="hover:text-santo-ochre transition-colors">Contacto</a>
           </div>
 
         </div>

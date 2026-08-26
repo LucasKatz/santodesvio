@@ -6,10 +6,10 @@ import Footer from '@/components/UserInt/footer';
 export default function Home() {
   return (
     <main className="min-h-screen bg-santo-dark">
-      <Navbar />
+  
       <HeroBanner />
       <ProductGrid />
-      <Footer />
+  
     </main>
   );
 }
