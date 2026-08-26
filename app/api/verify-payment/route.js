@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { generateTicketCode, generateQRCode } from '@/services/ticketService';
+import { generateQRCode,generateTicketCode } from '@/app/services/ticketService';
 
 export async function GET(req) {
   try {

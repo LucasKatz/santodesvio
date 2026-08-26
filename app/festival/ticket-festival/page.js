@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import Navbar from '@/components/UserInt/navbar';
 import Footer from '@/components/UserInt/footer';
-import TicketCardUI from '@/components/Festival/TicketCardUI';
+import TicketCardUI from '@/components/Festival/TicketCard';
 import { generateQRCode, generateTicketCode } from '@/app/services/ticketService';
 
 function TicketContent() {
