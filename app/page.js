@@ -7,7 +7,7 @@ export default function Home() {
     <main className="min-h-screen bg-santo-dark">
   
       <HeroBanner />
-      <ProductGrid />
+      {/* <ProductGrid /> */}
   
     </main>
   );
