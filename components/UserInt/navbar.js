@@ -63,7 +63,7 @@ export default function Navbar() {
 
           {/* Enlaces Derecha (Desktop) */}
           <div className="hidden md:flex items-center gap-8 font-santo-alt text-lg md:text-xl text-white tracking-wider uppercase">
-            <a href="festival" className="hover:text-santo-ochre transition-colors">Eventos</a>
+            {/*//<a href="festival" className="hover:text-santo-ochre transition-colors">Eventos</a>/*/}
             <a href="merch" className="hover:text-santo-ochre transition-colors">Merch</a>
             <a href="contacto" className="hover:text-santo-ochre transition-colors">Contacto</a>
           </div>
