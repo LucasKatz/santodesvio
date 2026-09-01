@@ -1,25 +1,53 @@
-// Tu archivo page.js (app/birra/page.js)
-import React from 'react';
-import BeerCatalogue from '@/components/catalogue';
-import PackagingCatalogue from '@/components/packaging';
+"use client"
 
-export default function BirraPage() {
+import React, { useState, useEffect } from 'react';
+import BeerCard from '@/components/catalogue/cards';
+
+const containerStyles = {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    padding: '20px',
+    backgroundColor: '#000',
+    minHeight: '100vh'
+};
+
+const BeerCatalogue = () => {
+    const [beers, setBeers] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetch('/api/beers')
+            .then((res) => res.json())
+            .then((data) => {
+                // Validamos que los datos recibidos sean realmente un array
+                if (Array.isArray(data)) {
+                    setBeers(data);
+                } else {
+                    console.error('La API no devolvió un array:', data);
+                    setBeers([]); // Evita que se rompa el componente asignando array vacío
+                }
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.error('Error al cargar las cervezas:', err);
+                setBeers([]);
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) {
+        return <div style={{ color: '#fff', textAlign: 'center', padding: '50px' }}>Cargando catálogo...</div>;
+    }
+
     return (
-        <main style={{ backgroundColor: '#000', color: '#fff', minHeight: '100vh' }}>
-            <header style={{ textAlign: 'center', padding: '40px 0' }}>
-                <h1 style={{ fontSize: '3em', color: '#d4af37', margin: 0 }}>SANTO DESVÍO</h1>
-                <p style={{ fontSize: '1.2em' }}>NUESTRAS BIRRAS</p>
-            </header>
-
-            {/* Catálogo de 6 cervezas */}
-            <BeerCatalogue />
-
-            {/* Catálogo de envases y balde */}
-            <PackagingCatalogue />
-
-            <footer style={{ textAlign: 'center', padding: '40px 0', borderTop: '1px solid #222' }}>
-                <p>&copy; 2024 Santo Desvío - Artisan Craft Beer</p>
-            </footer>
-        </main>
+        <div style={containerStyles}>
+            {/* El operador opcional ?. garantiza que sólo mapée si es un array válido */}
+            {beers?.map((beer) => (
+                <BeerCard key={beer._id} {...beer} />
+            ))}
+        </div>
     );
-}
+};
+
+export default BeerCatalogue;

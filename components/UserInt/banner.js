@@ -7,7 +7,6 @@ export default function HeroBanner() {
       <div className="w-full relative h-[320px] sm:h-[450px] md:h-[600px] lg:h-[700px]">
     <Link href="/birras">
         <Image 
-          Link="/birras"
           src="/banner.jpeg" 
           alt="Santo Desvío Banner"
           fill
