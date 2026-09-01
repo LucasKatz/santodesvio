@@ -48,15 +48,15 @@ export default function Navbar() {
             <a href="birras" className="hover:text-santo-ochre transition-colors">Nuestras Birras</a>
             <a href="fabrica" className="hover:text-santo-ochre transition-colors">La Fábrica</a>
           </div>
-
-          {/* Logo Central Flotante */}
+          {/* Logo Central Flotante (Agrandado) */}
           <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-20">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 relative rounded-full overflow-hidden border-4 border-[#F2A21B] bg-[#121212] shadow-2xl">
-              <Image 
-                src="/Logo.jpeg" 
-                alt="Santo Desvío Logo" 
+            {/* Aumentamos las medidas: w-20 h-20 en móvil, sm:w-28 sm:h-28 en tablets y md:w-32 md:h-32 en desktop */}
+            <div className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 relative rounded-full overflow-hidden border-4 border-[#F2A21B] bg-[#121212] shadow-2xl">
+              <Image
+                src="/logo2.png"
+                alt="Santo Desvío Logo"
                 fill
-                className="object-cover"
+                className="object-contain object-center scale-132"
                 priority
               />
             </div>
@@ -77,37 +77,37 @@ export default function Navbar() {
         {isOpen && (
           <div className="md:hidden mt-2 border-2 border-[#F2A21B] bg-[#121212] p-4 text-center">
             <nav className="flex flex-col gap-4 font-santo-alt text-lg text-white tracking-wider uppercase">
-              <a 
-                href="birras" 
-                onClick={() => setIsOpen(false)} 
+              <a
+                href="birras"
+                onClick={() => setIsOpen(false)}
                 className="hover:text-[#F2A21B] transition-colors py-1"
               >
                 Nuestras Birras
               </a>
-              <a 
-                href="fabrica" 
-                onClick={() => setIsOpen(false)} 
+              <a
+                href="fabrica"
+                onClick={() => setIsOpen(false)}
                 className="hover:text-[#F2A21B] transition-colors py-1"
               >
                 La Fábrica
               </a>
-              <a 
-                href="festival" 
-                onClick={() => setIsOpen(false)} 
+              <a
+                href="festival"
+                onClick={() => setIsOpen(false)}
                 className="hover:text-[#F2A21B] transition-colors py-1"
               >
                 Eventos
               </a>
-              <a 
-                href="merch" 
-                onClick={() => setIsOpen(false)} 
+              <a
+                href="merch"
+                onClick={() => setIsOpen(false)}
                 className="hover:text-[#F2A21B] transition-colors py-1"
               >
                 Merch
               </a>
-              <a 
-                href="contacto" 
-                onClick={() => setIsOpen(false)} 
+              <a
+                href="contacto"
+                onClick={() => setIsOpen(false)}
                 className="hover:text-[#F2A21B] transition-colors py-1"
               >
                 Contacto
