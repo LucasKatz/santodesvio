@@ -10,16 +10,16 @@ export default function FabricaPage() {
   return (
     <main className="min-h-screen bg-black text-zinc-100 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-20">
-        
+
         {/* --- SECCIÓN 1: HISTORIA --- */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          
+
           {/* Columna Imagen */}
           <div className="relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-[#D4AF37]/50 to-amber-700/30 rounded-2xl blur-lg opacity-40 group-hover:opacity-75 transition duration-500"></div>
             <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl border border-[#D4AF37]/30 bg-zinc-950 shadow-2xl">
               <Image
-                src="/fabric.png" // Asegúrate de colocar una foto de la fábrica en /public
+                src="/fabrica.jpeg"
                 alt="Fábrica de Cerveza Santo Desvío"
                 fill
                 priority
@@ -35,18 +35,28 @@ export default function FabricaPage() {
                 El Origen
               </span>
             </div>
-            
+
             <h1 className="text-3xl sm:text-4xl font-extrabold text-zinc-100 tracking-tight uppercase">
-              Nuestra <span className="text-[#D4AF37]">Historia</span>
+              ACA EMPEZÓ <span className="text-[#D4AF37]">EL DESVÍO</span>
             </h1>
 
             <div className="space-y-4 text-zinc-400 text-sm sm:text-base leading-relaxed">
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-              </p>
+                No tercerizamos la cerveza. No compramos una historia para pegarle una etiqueta.              </p>
               <p>
-                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-              </p>
+                La hacemos nosotros acá 
+              </p><br></br>
+              
+              <p>En nuestra fábrica diseñamos cada receta, cocinamos cada lote y seguimos el proceso de principio a fin. Entre acero, fuego, frío y muchas horas de laburo transformamos agua, malta, lúpulo y levadura en cerveza con identidad propia.
+                Acá no hay una línea de producción gigante ni una cerveza pensada para gustarle a todo el mundo. Hay decisiones, pruebas, ajustes, errores, aprendizaje y una obsesión bastante simple: que cada vaso que salga de esta fábrica tenga algo para decir.
+                Creemos en hacer las cosas cerca, en conocer lo que producimos y cuidar cada etapa del proceso. Desde la receta hasta el momento en que la cerveza llega fría al vaso.
+                No buscamos hacer cerveza para todo el mundo.</p> <br></br>
+
+              <p>	Buscamos hacer cerveza que valga la pena recordar.					</p>
+
+              <p>	Porque Santo Desvío no nació en una agencia, ni en una presentación de marketing.							</p><br></br>
+
+              <p>	Nació acá. Entre tanques, fuego y lupulo.				<br></br> 	Santo Desvío · Fábrica rebelde de cerveza.				</p>
             </div>
 
             {/* Ficha de Valores Rápidos */}
@@ -70,7 +80,7 @@ export default function FabricaPage() {
 
           <div className="relative z-10 max-w-2xl mx-auto space-y-6">
             <span className="text-[#D4AF37] text-4xl">🍻</span>
-            
+
             <h2 className="text-2xl sm:text-4xl font-black text-zinc-100 tracking-wide uppercase">
               La cerveza no solo se toma, <br />
               <span className="text-[#D4AF37]">se celebra.</span>

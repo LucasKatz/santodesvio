@@ -19,7 +19,7 @@ export default function FestivalPage() {
         <Link href="/entradas" className="block relative overflow-hidden rounded-2xl border-2 border-[#D4AF37]/30 group-hover:border-[#D4AF37] transition-all duration-300 shadow-[0_0_30px_rgba(212,175,55,0.15)] group-hover:shadow-[0_0_50px_rgba(212,175,55,0.35)]">
           
           <Image
-            src="/flyer-santo-desvio.jpg"
+            src="/FESTIVAL.jpeg"
             alt="Santo Desvío Festival Vol. I - Fiesta de Cerveza Artesanal"
             width={700}
             height={1050}

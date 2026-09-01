@@ -14,13 +14,14 @@ export default function Navbar() {
     <header className="bg-[#121212] relative z-50 pt-2 pb-2 mt-4 sm:mt-8">
       {/* Marco con doble borde dorado */}
       <div className="max-w-7xl mx-auto px-4">
+        {/* Contenedor padre con alineación vertical (items-center) */}
         <div className="border-2 border-[#F2A21B] py-2 px-4 md:px-6 relative flex items-center justify-between">
 
-          {/* Botón Hamburguesa (solo visible en pantallas pequeñas) */}
+          {/* Botón Hamburguesa con Flexbox para centrado interno */}
           <button
             onClick={toggleMenu}
             type="button"
-            className="md:hidden text-[#F2A21B] hover:text-white focus:outline-none p-1"
+            className="md:hidden text-[#F2A21B] hover:text-white focus:outline-none p-1 flex items-center justify-center"
             aria-label="Abrir menú"
           >
             <svg
@@ -63,7 +64,6 @@ export default function Navbar() {
 
           {/* Enlaces Derecha (Desktop) */}
           <div className="hidden md:flex items-center gap-8 font-santo-alt text-lg md:text-xl text-white tracking-wider uppercase">
-            {/*//<a href="festival" className="hover:text-santo-ochre transition-colors">Eventos</a>/*/}
             <a href="merch" className="hover:text-santo-ochre transition-colors">Merch</a>
             <a href="contacto" className="hover:text-santo-ochre transition-colors">Contacto</a>
           </div>
