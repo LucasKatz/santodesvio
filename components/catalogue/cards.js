@@ -31,12 +31,12 @@ export default function BeerCard({ id, name, style, price, ibu, abv, srm, descri
     <div className="bg-[#1c1c1c] border border-[#F2A21B] rounded-lg p-5 max-w-[300px] m-2.5 text-white font-sans flex flex-col items-center text-center shadow-xl">
       
       {/* Contenedor de la Imagen */}
-      <div className="relative w-24 h-36 mb-4">
+      <div className="relative w-36 h-48 mb-4">
         <Image
           src={imageUrl}
           alt={name}
           fill
-          className="object-contain"
+          className="object-cover"
         />
       </div>
 

@@ -46,7 +46,7 @@ export default function Navbar() {
           {/* Enlaces Izquierda (Desktop) */}
           <div className="hidden md:flex items-center gap-8 font-santo-alt text-lg md:text-xl text-white tracking-wider uppercase">
             <a href="birras" className="hover:text-santo-ochre transition-colors">Nuestras Birras</a>
-            <a href="fabrica" className="hover:text-santo-ochre transition-colors">La Fábrica</a>
+            <a href="festival" className="hover:text-santo-ochre transition-colors">Eventos</a>
           </div>
           {/* Logo Central Flotante (Agrandado) */}
           <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-20">
@@ -84,13 +84,7 @@ export default function Navbar() {
               >
                 Nuestras Birras
               </a>
-              <a
-                href="fabrica"
-                onClick={() => setIsOpen(false)}
-                className="hover:text-[#F2A21B] transition-colors py-1"
-              >
-                La Fábrica
-              </a>
+
               <a
                 href="festival"
                 onClick={() => setIsOpen(false)}

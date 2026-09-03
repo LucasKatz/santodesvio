@@ -2,6 +2,7 @@ import './globals.css';
 import Navbar from '@/components/UserInt/navbar';
 import Footer from '@/components/UserInt/footer';
 import { CartProvider } from '@/context/CartContext';
+import WhatsAppButton from '@/components/UserInt/wppButton';
 
 export const metadata = {
   title: 'Santo Desvío - Cerveza Artesanal Rebelde',
@@ -18,6 +19,7 @@ export default function RootLayout({ children }) {
           {children}
         </main>
         <Footer />
+        <WhatsAppButton/>
         </CartProvider>
       </body>
     </html>

@@ -1,5 +1,5 @@
 import HeroBanner from '@/components/UserInt/banner';
-import ProductGrid from '@/components/Products/productGrid';
+import FabricaPage from './fabrica/fabrica';
 
 
 export default function Home() {
@@ -7,7 +7,8 @@ export default function Home() {
     <main className="min-h-screen bg-santo-dark">
   
       <HeroBanner />
-      {/* <ProductGrid /> */}
+      <FabricaPage/>
+
   
     </main>
   );
