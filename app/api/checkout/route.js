@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 const rawBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 const baseUrl = rawBaseUrl.trim().replace(/\/$/, '');
+import { NextResponse } from 'next/server';
 
 export async function POST(req) {
   try {
@@ -10,6 +11,9 @@ export async function POST(req) {
     if (!items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json({ error: 'El carrito está vacío o el formato es incorrecto' }, { status: 400 });
     }
+
+    // Definir baseUrl (asegúrate de tener esta variable definida o tomada de los headers/env)
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
     // Mapear y sanear cada ítem para evitar valores `NaN` o `undefined`
     const formattedItems = items.map((item, index) => {
@@ -33,10 +37,12 @@ export async function POST(req) {
     const preferenceData = {
       items: formattedItems,
       back_urls: {
-        success: `${baseUrl}/cart?status=success`,
+        // 1. Redirección al finalizar la compra con éxito
+        success: `${baseUrl}/thanks`,
         failure: `${baseUrl}/cart?status=failure`,
         pending: `${baseUrl}/cart?status=pending`,
       },
+      // 2. Retorno automático habilitado al aprobar el pago
       auto_return: 'approved',
     };
 

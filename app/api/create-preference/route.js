@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
 
-const rawBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-const baseUrl = rawBaseUrl.trim().replace(/\/$/, '');
 
 export async function POST(req) {
   try {
@@ -11,7 +9,10 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Faltan datos obligatorios' }, { status: 400 });
     }
 
-  const preferenceData = {
+  // Definir la URL base
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+
+    const preferenceData = {
       items: [
         {
           title: 'Entrada Santo Desvío Festival',
@@ -22,8 +23,6 @@ export async function POST(req) {
       ],
       payer: { name, surname: lastName, email },
       metadata: { dni, name, lastName, email },
-      // OBLIGATORIO EN SANDBOX: Le dice a MP dónde enviar el webhook de este pago
-      notification_url: `${baseUrl}/api/webhooks/mercadopago`, 
       back_urls: {
         success: `${baseUrl}/festival/ticket`,
         failure: `${baseUrl}/festival?status=failure`,
@@ -32,11 +31,16 @@ export async function POST(req) {
       auto_return: 'approved',
     };
 
+    // Mercado Pago requiere que notification_url sea pública y HTTPS
+    if (!baseUrl.includes('localhost') && !baseUrl.includes('127.0.0.1')) {
+      preferenceData.notification_url = `${baseUrl}/api/webhooks/mercadopago`;
+    }
+
     const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+        Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN?.trim()}`,
       },
       body: JSON.stringify(preferenceData),
     });
@@ -51,7 +55,7 @@ export async function POST(req) {
       return NextResponse.json({ error: data.message || 'Error en MercadoPago' }, { status: response.status });
     }
 
-    // RETORNA LA URL DE SANDBOX DIRECTA
+    // RETORNA LA URL DE CHECKOUT
     return NextResponse.json({ 
       init_point: data.sandbox_init_point || data.init_point 
     });
