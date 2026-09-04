@@ -1,25 +1,24 @@
 import { NextResponse } from 'next/server';
 
-// 1. Definición y saneamiento global de la URL base
+// Sanear URL base sin barras finales
 const rawBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 const baseUrl = rawBaseUrl.trim().replace(/\/$/, '');
 
 export async function POST(req) {
   try {
-    // Recibimos los items del carrito y el formulario del comprador (payer)
     const { items, payer } = await req.json();
 
     if (!items || !Array.isArray(items) || items.length === 0) {
-      return NextResponse.json({ error: 'El carrito está vacío o el formato es incorrecto' }, { status: 400 });
+      return NextResponse.json({ error: 'El carrito está vacío' }, { status: 400 });
     }
 
-    // Mapear y sanear cada ítem
+    // 1. Formatear items del carrito
     const formattedItems = items.map((item, index) => {
       const price = Number(item.price);
       const quantity = Number(item.quantity);
 
       if (isNaN(price) || price <= 0) {
-        throw new Error(`El producto "${item.name || index}" tiene un precio inválido: ${item.price}`);
+        throw new Error(`El producto "${item.name || index}" tiene un precio inválido.`);
       }
 
       return {
@@ -32,10 +31,9 @@ export async function POST(req) {
       };
     });
 
-    // Construcción de la preferencia para MercadoPago
+    // 2. Construir preferencia
     const preferenceData = {
       items: formattedItems,
-      // Metadata donde guardamos los datos del formulario para recuperarlos en el webhook sin guardar en DB
       metadata: {
         name: payer?.name || '',
         last_name: payer?.lastName || '',
@@ -49,19 +47,19 @@ export async function POST(req) {
         email: payer?.email || '',
       },
       back_urls: {
-        success: 'https://santodesvio-ebon.vercel.app/thanks',
-        failure: 'https://santodesvio-ebon.vercel.app/cart?status=failure',
-        pending: 'https://santodesvio-ebon.vercel.app/cart?status=pending',
+        success: `${baseUrl}/thanks`,
+        failure: `${baseUrl}/cart?status=failure`,
+        pending: `${baseUrl}/cart?status=pending`,
       },
-      // Retorno automático para redirigir apenas se procese el pago
       auto_return: 'approved',
     };
 
-    // Solo adjuntar Webhook en entornos que no sean localhost
+    // 3. Adjuntar Webhook si no estamos en localhost
     if (!baseUrl.includes('localhost') && !baseUrl.includes('127.0.0.1')) {
       preferenceData.notification_url = `${baseUrl}/api/webhooks/mercadopago`;
     }
 
+    // 4. Crear preferencia en Mercado Pago
     const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
       method: 'POST',
       headers: {
@@ -74,15 +72,9 @@ export async function POST(req) {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error('=== ERROR MERCADOPAGO DETALLADO ===');
-      console.error(JSON.stringify(data, null, 2));
-      console.error('==================================');
-
+      console.error('[CHECKOUT MP ERROR]:', data);
       return NextResponse.json(
-        {
-          error: data.message || 'Error en la API de MercadoPago',
-          details: data.cause || data
-        },
+        { error: data.message || 'Error en MercadoPago', details: data },
         { status: response.status }
       );
     }
@@ -92,7 +84,7 @@ export async function POST(req) {
     });
 
   } catch (error) {
-    console.error('Error interno en endpoint checkout:', error.message);
-    return NextResponse.json({ error: error.message || 'Error interno del servidor' }, { status: 500 });
+    console.error('Error en /api/checkout:', error.message);
+    return NextResponse.json({ error: error.message || 'Error interno' }, { status: 500 });
   }
 }

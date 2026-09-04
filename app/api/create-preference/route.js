@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+/*import { NextResponse } from 'next/server';
 
 
 export async function POST(req) {
@@ -64,4 +64,4 @@ export async function POST(req) {
     console.error('Error interno del servidor:', error);
     return NextResponse.json({ error: 'Error interno al procesar el pago' }, { status: 500 });
   }
-}
+}*/
