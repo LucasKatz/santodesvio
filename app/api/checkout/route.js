@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 
+// 1. Definición y saneamiento global de la URL base (elimina espacios y barras diagonales al final)
 const rawBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 const baseUrl = rawBaseUrl.trim().replace(/\/$/, '');
-import { NextResponse } from 'next/server';
 
 export async function POST(req) {
   try {
@@ -12,10 +12,7 @@ export async function POST(req) {
       return NextResponse.json({ error: 'El carrito está vacío o el formato es incorrecto' }, { status: 400 });
     }
 
-    // Definir baseUrl (asegúrate de tener esta variable definida o tomada de los headers/env)
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-
-    // Mapear y sanear cada ítem para evitar valores `NaN` o `undefined`
+    // Mapear y sanear cada ítem
     const formattedItems = items.map((item, index) => {
       const price = Number(item.price);
       const quantity = Number(item.quantity);
@@ -37,16 +34,16 @@ export async function POST(req) {
     const preferenceData = {
       items: formattedItems,
       back_urls: {
-        // 1. Redirección al finalizar la compra con éxito
+        // Redirección directa al endpoint/página /thanks tras el pago
         success: `${baseUrl}/thanks`,
         failure: `${baseUrl}/cart?status=failure`,
         pending: `${baseUrl}/cart?status=pending`,
       },
-      // 2. Retorno automático habilitado al aprobar el pago
+      // Retorno automático obligatorio para que MP no muestre un botón y redirija solo
       auto_return: 'approved',
     };
 
-    // MercadoPago no acepta notification_url apuntando a localhost
+    // Solo adjuntar Webhook en entornos que no sean localhost
     if (!baseUrl.includes('localhost') && !baseUrl.includes('127.0.0.1')) {
       preferenceData.notification_url = `${baseUrl}/api/webhooks/mercadopago`;
     }
