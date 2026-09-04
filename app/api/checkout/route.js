@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 
-// 1. Definición y saneamiento global de la URL base (elimina espacios y barras diagonales al final)
+// 1. Definición y saneamiento global de la URL base
 const rawBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 const baseUrl = rawBaseUrl.trim().replace(/\/$/, '');
 
 export async function POST(req) {
   try {
-    const { items } = await req.json();
+    // Recibimos los items del carrito y el formulario del comprador (payer)
+    const { items, payer } = await req.json();
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json({ error: 'El carrito está vacío o el formato es incorrecto' }, { status: 400 });
@@ -31,14 +32,28 @@ export async function POST(req) {
       };
     });
 
+    // Construcción de la preferencia para MercadoPago
     const preferenceData = {
       items: formattedItems,
+      // Metadata donde guardamos los datos del formulario para recuperarlos en el webhook sin guardar en DB
+      metadata: {
+        name: payer?.name || '',
+        last_name: payer?.lastName || '',
+        dni: payer?.dni || '',
+        phone: payer?.phone || '',
+        email: payer?.email || '',
+      },
+      payer: {
+        name: payer?.name || '',
+        surname: payer?.lastName || '',
+        email: payer?.email || '',
+      },
       back_urls: {
         success: 'https://santodesvio-ebon.vercel.app/thanks',
         failure: 'https://santodesvio-ebon.vercel.app/cart?status=failure',
         pending: 'https://santodesvio-ebon.vercel.app/cart?status=pending',
       },
-      // Retorno automático obligatorio para que MP no muestre un botón y redirija solo
+      // Retorno automático para redirigir apenas se procese el pago
       auto_return: 'approved',
     };
 

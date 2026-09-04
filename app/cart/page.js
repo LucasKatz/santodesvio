@@ -3,26 +3,51 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useCart } from '../../context/CartContext'; // Ajusta la ruta a tu context
+import { useCart } from '../../context/CartContext';
 
 export default function CartPage() {
   const { cart, updateQuantity, removeFromCart, clearCart, totalPrice } = useCart();
   const [loading, setLoading] = useState(false);
 
-  // Integración Checkout MercadoPago
-  const handleCheckout = async () => {
+  // Estado para los datos del comprador
+  const [buyer, setBuyer] = useState({
+    name: '',
+    lastName: '',
+    dni: '',
+    phone: '',
+    email: '',
+  });
+
+  const handleInputChange = (e) => {
+    setBuyer({
+      ...buyer,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleCheckout = async (e) => {
+    e.preventDefault();
+
+    // Validar que todos los campos estén completos
+    if (!buyer.name || !buyer.lastName || !buyer.dni || !buyer.phone || !buyer.email) {
+      alert('Por favor, completa todos los datos personales para enviar tu ticket.');
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: cart }),
+        body: JSON.stringify({
+          items: cart,
+          payer: buyer, // Se envían los datos del comprador
+        }),
       });
 
       const data = await response.json();
 
       if (data.init_point) {
-        // Redirige al checkout oficial de MercadoPago
         window.location.href = data.init_point;
       } else {
         alert('Hubo un error al generar la preferencia de pago.');
@@ -84,7 +109,6 @@ export default function CartPage() {
                 </div>
               </div>
 
-              {/* Selector de cantidad y subtotal */}
               <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-800">
                 <div className="flex items-center border border-[#F2A21B] rounded">
                   <button
@@ -132,34 +156,100 @@ export default function CartPage() {
           </div>
         </div>
 
-        {/* Resumen de compra */}
-        <div className="bg-[#1a1a1a] border-2 border-[#F2A21B] p-6 rounded h-fit">
-          <h2 className="font-santo-alt text-2xl text-white uppercase mb-6 border-b border-gray-800 pb-2">
-            Resumen
-          </h2>
+        {/* Formulario y Resumen */}
+        <div className="space-y-6">
+          {/* Formulario de Datos */}
+          <div className="bg-[#1a1a1a] border-2 border-[#F2A21B] p-6 rounded">
+            <h2 className="font-santo-alt text-xl text-white uppercase mb-4 border-b border-gray-800 pb-2">
+              Datos del Titular (para Ticket)
+            </h2>
+            <form onSubmit={handleCheckout} className="space-y-3">
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">Nombre</label>
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  value={buyer.name}
+                  onChange={handleInputChange}
+                  className="w-full bg-[#121212] border border-gray-700 rounded px-3 py-2 text-white text-sm focus:border-[#F2A21B] outline-none"
+                  placeholder="Juan"
+                />
+              </div>
 
-          <div className="space-y-3 text-sm text-gray-300 mb-6">
-            <div className="flex justify-between">
-              <span>Subtotal</span>
-              <span>${totalPrice.toLocaleString('es-AR')}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Envío</span>
-              <span className="text-xs text-gray-400">A calcular en la entrega</span>
-            </div>
-            <div className="border-t border-gray-800 pt-3 flex justify-between font-bold text-lg text-[#F2A21B]">
-              <span>Total</span>
-              <span>${totalPrice.toLocaleString('es-AR')}</span>
-            </div>
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">Apellido</label>
+                <input
+                  type="text"
+                  name="lastName"
+                  required
+                  value={buyer.lastName}
+                  onChange={handleInputChange}
+                  className="w-full bg-[#121212] border border-gray-700 rounded px-3 py-2 text-white text-sm focus:border-[#F2A21B] outline-none"
+                  placeholder="Pérez"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">DNI</label>
+                <input
+                  type="text"
+                  name="dni"
+                  required
+                  value={buyer.dni}
+                  onChange={handleInputChange}
+                  className="w-full bg-[#121212] border border-gray-700 rounded px-3 py-2 text-white text-sm focus:border-[#F2A21B] outline-none"
+                  placeholder="12345678"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">Celular / WhatsApp</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  required
+                  value={buyer.phone}
+                  onChange={handleInputChange}
+                  className="w-full bg-[#121212] border border-gray-700 rounded px-3 py-2 text-white text-sm focus:border-[#F2A21B] outline-none"
+                  placeholder="1112345678"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">Email (recibirás el ticket aquí)</label>
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  value={buyer.email}
+                  onChange={handleInputChange}
+                  className="w-full bg-[#121212] border border-gray-700 rounded px-3 py-2 text-white text-sm focus:border-[#F2A21B] outline-none"
+                  placeholder="juan@ejemplo.com"
+                />
+              </div>
+
+              {/* Resumen de compra */}
+              <div className="pt-4 border-t border-gray-800 space-y-2 text-sm text-gray-300">
+                <div className="flex justify-between">
+                  <span>Subtotal</span>
+                  <span>${totalPrice.toLocaleString('es-AR')}</span>
+                </div>
+                <div className="flex justify-between font-bold text-lg text-[#F2A21B] pt-2 border-t border-gray-800">
+                  <span>Total</span>
+                  <span>${totalPrice.toLocaleString('es-AR')}</span>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full mt-4 bg-[#F2A21B] hover:bg-[#d48b12] text-[#121212] font-santo-alt font-bold uppercase py-3 rounded border-2 border-[#F2A21B] shadow-lg transition-all transform hover:scale-[1.02] disabled:opacity-50"
+              >
+                {loading ? 'Procesando...' : 'Pagar con MercadoPago'}
+              </button>
+            </form>
           </div>
-
-          <button
-            onClick={handleCheckout}
-            disabled={loading}
-            className="w-full bg-[#F2A21B] hover:bg-[#d48b12] text-[#121212] font-santo-alt font-bold uppercase py-3 rounded border-2 border-[#F2A21B] shadow-lg transition-all transform hover:scale-[1.02] disabled:opacity-50"
-          >
-            {loading ? 'Procesando...' : 'Pagar con MercadoPago'}
-          </button>
         </div>
       </div>
     </div>
