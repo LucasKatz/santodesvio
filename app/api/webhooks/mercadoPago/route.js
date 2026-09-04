@@ -1,8 +1,49 @@
 import { NextResponse } from 'next/server';
+import nodemailer from 'nodemailer';
 import { generateTicketCode, generateQRCode } from '@/app/services/ticketService';
-import { sendTicketEmail } from './resend';
 
 export const dynamic = 'force-dynamic';
+
+// Configuración del transporte de Nodemailer con Gmail
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS,
+  },
+});
+
+// Función interna para enviar correos usando Nodemailer
+async function sendTicketEmail({ email, name, lastName, ticketCode, qrDataUrl }) {
+  const base64Data = qrDataUrl.replace(/^data:image\/png;base64,/, '');
+  const qrBuffer = Buffer.from(base64Data, 'base64');
+
+  const mailOptions = {
+    from: `"Santo Desvío Festival" <${process.env.GMAIL_USER}>`,
+    to: email,
+    subject: `🎟️ Entrada Santo Desvío - Ticket #${ticketCode}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; background-color: #121212; color: #ffffff; padding: 20px; border-radius: 8px;">
+        <h1 style="color: #F2A21B;">¡Hola ${name} ${lastName}!</h1>
+        <p>Tu pago ha sido aprobado. Presenta este código QR en la entrada del evento:</p>
+        <div style="text-align: center; margin: 20px 0;">
+          <img src="cid:qrcodeimg" alt="Código QR Ticket" style="width: 200px; height: 200px; border: 2px solid #F2A21B;" />
+        </div>
+        <p><strong>Código de Ticket:</strong> <span style="color: #F2A21B;">${ticketCode}</span></p>
+        <p>¡Nos vemos en el festival!</p>
+      </div>
+    `,
+    attachments: [
+      {
+        filename: `ticket-${ticketCode}.png`,
+        content: qrBuffer,
+        cid: 'qrcodeimg', // Muestra la imagen incrustada en el HTML
+      },
+    ],
+  };
+
+  return await transporter.sendMail(mailOptions);
+}
 
 export async function POST(req) {
   console.log('--------------------------------------------------');
@@ -11,7 +52,6 @@ export async function POST(req) {
   try {
     const { searchParams } = new URL(req.url);
 
-    // 1. Obtener parámetros de la query o del body
     let topic = searchParams.get('topic') || searchParams.get('type');
     let id = searchParams.get('id') || searchParams.get('data.id');
 
@@ -49,7 +89,6 @@ export async function POST(req) {
       if (payment.status === 'approved') {
         const ticketCode = generateTicketCode();
 
-        // Extracción de metadata y payer
         const email = payment.metadata?.email || payment.payer?.email;
         const name = payment.metadata?.name || payment.payer?.first_name || 'Asistente';
         const lastName = payment.metadata?.last_name || payment.metadata?.lastName || payment.payer?.last_name || '';
@@ -64,7 +103,6 @@ export async function POST(req) {
         console.log(`   - Teléfono: ${phone}`);
         console.log(`   - Monto: $${amount}`);
 
-        // Generar QR
         const qrContent = 
           `--- SANTO DESVÍO FESTIVAL ---\n` +
           `Código Ticket: ${ticketCode}\n` +
@@ -78,9 +116,9 @@ export async function POST(req) {
         console.log('[WEBHOOK MP] ⚙️ Generando código QR...');
         const qrBase64 = await generateQRCode(qrContent);
 
-        // 1. Enviar email al cliente
+        // 1. Enviar email al cliente desde Gmail
         if (email) {
-          console.log(`[WEBHOOK MP] ✉️ Enviando email al comprador (${email})...`);
+          console.log(`[WEBHOOK MP] ✉️ Enviando email vía Gmail al comprador (${email})...`);
           const resClient = await sendTicketEmail({
             email,
             name,
@@ -88,7 +126,7 @@ export async function POST(req) {
             ticketCode,
             qrDataUrl: qrBase64,
           });
-          console.log('[WEBHOOK MP] ✅ Email comprador procesado:', resClient);
+          console.log('[WEBHOOK MP] ✅ Email comprador enviado:', resClient.messageId);
         } else {
           console.warn('[WEBHOOK MP] ⚠️ No hay email de comprador asociado. Se omite este envío.');
         }
@@ -102,7 +140,7 @@ export async function POST(req) {
           ticketCode,
           qrDataUrl: qrBase64,
         });
-        console.log('[WEBHOOK MP] ✅ Email admin procesado:', resAdmin);
+        console.log('[WEBHOOK MP] ✅ Email admin enviado:', resAdmin.messageId);
 
       } else {
         console.log(`[WEBHOOK MP] ℹ️ El pago ${id} no fue aprobado (Estado: ${payment.status}). No se envían tickets.`);
