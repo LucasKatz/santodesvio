@@ -5,27 +5,32 @@ import { sendTicketEmail } from './resend';
 export const dynamic = 'force-dynamic';
 
 export async function POST(req) {
+  console.log('--------------------------------------------------');
+  console.log('[WEBHOOK MP] 🚀 Petición entrante recibida');
+
   try {
     const { searchParams } = new URL(req.url);
 
-    // 1. Obtener datos de la URL o del Body JSON si MP los manda en el cuerpo
+    // 1. Obtener parámetros de la query o del body
     let topic = searchParams.get('topic') || searchParams.get('type');
     let id = searchParams.get('id') || searchParams.get('data.id');
 
-    // Si no vinieron en la URL, intentar leer el Body enviado por MercadoPago
     if (!id || !topic) {
       try {
         const body = await req.json();
         topic = topic || body.type || (body.action?.includes('payment') ? 'payment' : null);
         id = id || body.data?.id || body.id;
+        console.log('[WEBHOOK MP] 📦 Datos leídos desde el BODY del request:', body);
       } catch (e) {
-        // El body puede venir vacío en pingeos de prueba de MP
+        console.log('[WEBHOOK MP] ⚠️ No se pudo parsear el body JSON (posible pingeo de prueba)');
       }
     }
 
-    console.log(`[WEBHOOK] Notificación recibida -> Topic: ${topic} | ID: ${id}`);
+    console.log(`[WEBHOOK MP] 🔍 Topic: "${topic}" | Payment ID: "${id}"`);
 
     if (topic === 'payment' && id) {
+      console.log(`[WEBHOOK MP] 📡 Consultando estado del pago ${id} a Mercado Pago...`);
+
       const response = await fetch(`https://api.mercadopago.com/v1/payments/${id}`, {
         headers: {
           Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN?.trim()}`,
@@ -33,12 +38,18 @@ export async function POST(req) {
       });
 
       const payment = await response.json();
-      console.log(`[WEBHOOK] Estado del pago ID ${id}: ${payment.status}`);
+
+      if (!response.ok) {
+        console.error('[WEBHOOK MP] ❌ Error al obtener el pago de Mercado Pago:', payment);
+        return NextResponse.json({ error: 'Error consultando MP' }, { status: 500 });
+      }
+
+      console.log(`[WEBHOOK MP] 💳 Estado devuelto por Mercado Pago: "${payment.status}"`);
 
       if (payment.status === 'approved') {
         const ticketCode = generateTicketCode();
 
-        // Extracción de datos del comprador
+        // Extracción de metadata y payer
         const email = payment.metadata?.email || payment.payer?.email;
         const name = payment.metadata?.name || payment.payer?.first_name || 'Asistente';
         const lastName = payment.metadata?.last_name || payment.metadata?.lastName || payment.payer?.last_name || '';
@@ -46,7 +57,14 @@ export async function POST(req) {
         const phone = payment.metadata?.phone || 'Sin especificar';
         const amount = payment.transaction_amount || 0;
 
-        // Construcción del contenido del QR
+        console.log('[WEBHOOK MP] 📋 Datos del comprador extraídos:');
+        console.log(`   - Nombre: ${name} ${lastName}`);
+        console.log(`   - Email: ${email}`);
+        console.log(`   - DNI: ${dni}`);
+        console.log(`   - Teléfono: ${phone}`);
+        console.log(`   - Monto: $${amount}`);
+
+        // Generar QR
         const qrContent = 
           `--- SANTO DESVÍO FESTIVAL ---\n` +
           `Código Ticket: ${ticketCode}\n` +
@@ -55,41 +73,51 @@ export async function POST(req) {
           `Teléfono: ${phone}\n` +
           `Email: ${email}\n` +
           `Monto Pagado: $${amount} ARS\n` +
-          `ID de Transacción MP: ${id}`;
+          `ID Transacción MP: ${id}`;
 
+        console.log('[WEBHOOK MP] ⚙️ Generando código QR...');
         const qrBase64 = await generateQRCode(qrContent);
 
-        console.log(`[WEBHOOK] Pago Aprobado. Procesando envío de mails para: ${email} y santodesvio@gmail.com`);
-
-        // 1. Envío de ticket al Comprador
+        // 1. Enviar email al cliente
         if (email) {
-          await sendTicketEmail({
+          console.log(`[WEBHOOK MP] ✉️ Enviando email al comprador (${email})...`);
+          const resClient = await sendTicketEmail({
             email,
             name,
             lastName,
             ticketCode,
             qrDataUrl: qrBase64,
           });
+          console.log('[WEBHOOK MP] ✅ Email comprador procesado:', resClient);
         } else {
-          console.warn('[WEBHOOK] ⚠️ No se encontró email del comprador para enviar el ticket.');
+          console.warn('[WEBHOOK MP] ⚠️ No hay email de comprador asociado. Se omite este envío.');
         }
 
-        // 2. Envío de copia del ticket a la administración del negocio
-        await sendTicketEmail({
+        // 2. Enviar copia a la administración
+        console.log('[WEBHOOK MP] ✉️ Enviando copia a santodesvio@gmail.com...');
+        const resAdmin = await sendTicketEmail({
           email: 'santodesvio@gmail.com',
           name: `${name} (Copia Venta)`,
           lastName,
           ticketCode,
           qrDataUrl: qrBase64,
         });
+        console.log('[WEBHOOK MP] ✅ Email admin procesado:', resAdmin);
+
+      } else {
+        console.log(`[WEBHOOK MP] ℹ️ El pago ${id} no fue aprobado (Estado: ${payment.status}). No se envían tickets.`);
       }
+    } else {
+      console.log('[WEBHOOK MP] ℹ️ La notificación no corresponde a un evento de pago procesable.');
     }
 
-    // Responder HTTP 200 a MercadoPago rápido para confirmar la recepción
+    console.log('[WEBHOOK MP] 🏁 Proceso finalizado con éxito. Devolviendo HTTP 200 a MP');
+    console.log('--------------------------------------------------');
     return NextResponse.json({ received: true }, { status: 200 });
 
   } catch (error) {
-    console.error('[WEBHOOK] ❌ Error procesando el webhook:', error);
-    return NextResponse.json({ error: 'Webhook Error' }, { status: 500 });
+    console.error('[WEBHOOK MP] 💥 ERROR EXCEPCIONAL EN WEBHOOK:', error);
+    console.log('--------------------------------------------------');
+    return NextResponse.json({ error: 'Webhook Internal Error' }, { status: 500 });
   }
 }
