@@ -1,11 +1,16 @@
 import { NextResponse } from 'next/server';
 
-// Sanear URL base sin barras finales
-const rawBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-const baseUrl = rawBaseUrl.trim().replace(/\/$/, '');
+// Función para obtener dinámicamente la URL base sin barras finales
+const getBaseUrl = () => {
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return process.env.NEXT_PUBLIC_BASE_URL?.trim().replace(/\/$/, '') || 'http://localhost:3000';
+};
 
 export async function POST(req) {
   try {
+    const baseUrl = getBaseUrl();
     const { items, payer } = await req.json();
 
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -57,6 +62,7 @@ export async function POST(req) {
     // 3. Adjuntar Webhook si no estamos en localhost
     if (!baseUrl.includes('localhost') && !baseUrl.includes('127.0.0.1')) {
       preferenceData.notification_url = `${baseUrl}/api/webhooks/mercadopago`;
+      console.log('👉 URL de Webhook enviada a MP:', preferenceData.notification_url);
     }
 
     // 4. Crear preferencia en Mercado Pago
