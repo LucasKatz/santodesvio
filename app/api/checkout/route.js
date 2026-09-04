@@ -34,10 +34,9 @@ export async function POST(req) {
     const preferenceData = {
       items: formattedItems,
       back_urls: {
-        // Redirección directa al endpoint/página /thanks tras el pago
-        success: `${baseUrl}/thanks`,
-        failure: `${baseUrl}/cart?status=failure`,
-        pending: `${baseUrl}/cart?status=pending`,
+        success: 'https://santodesvio-ebon.vercel.app/thanks',
+        failure: 'https://santodesvio-ebon.vercel.app/cart?status=failure',
+        pending: 'https://santodesvio-ebon.vercel.app/cart?status=pending',
       },
       // Retorno automático obligatorio para que MP no muestre un botón y redirija solo
       auto_return: 'approved',
@@ -63,12 +62,12 @@ export async function POST(req) {
       console.error('=== ERROR MERCADOPAGO DETALLADO ===');
       console.error(JSON.stringify(data, null, 2));
       console.error('==================================');
-      
+
       return NextResponse.json(
-        { 
-          error: data.message || 'Error en la API de MercadoPago', 
-          details: data.cause || data 
-        }, 
+        {
+          error: data.message || 'Error en la API de MercadoPago',
+          details: data.cause || data
+        },
         { status: response.status }
       );
     }

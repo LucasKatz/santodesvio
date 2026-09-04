@@ -10,6 +10,7 @@ export async function POST(req) {
 
     // 1. Obtener datos de la URL o del Body JSON si MP los manda en el cuerpo
     let topic = searchParams.get('topic') || searchParams.get('type');
+    //agrego cualquier comment para que haya cambios
     let id = searchParams.get('id') || searchParams.get('data.id');
 
     // Si no vinieron en la URL, intentar leer el Body enviado por MercadoPago
