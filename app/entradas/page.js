@@ -32,7 +32,7 @@ export default function PageEntradas() {
     const ticketItem = {
       id: 'ticket-festival-santo-desvio',
       name: 'Entrada Santo Desvío Festival Vol. I',
-      price: 15000,
+      price: 150,
       image: '/FESTIVAL.jpeg',
       payerData: formData,
     };
