@@ -34,13 +34,19 @@ export async function POST(req) {
     // 2. Construir el objeto de preferencia para Mercado Pago
     const preferenceData = {
       items: formattedItems,
-      // Metadata para recuperar los datos en el webhook sin necesidad de base de datos
+      // Metadata para recuperar los datos y los ítems en el webhook sin necesidad de base de datos
       metadata: {
         name: payer?.name || '',
         last_name: payer?.lastName || '',
         dni: payer?.dni || '',
         phone: payer?.phone || '',
         email: payer?.email || '',
+        // AQUÍ GUARDAMOS EL DETALLE DE LOS PRODUCTOS PARA RECUPERAR EN EL WEBHOOK
+        cart_items: formattedItems.map(item => ({
+          title: item.title,
+          quantity: item.quantity,
+          unit_price: item.unit_price,
+        })),
       },
       payer: {
         name: payer?.name || '',
@@ -54,7 +60,7 @@ export async function POST(req) {
       },
       auto_return: 'approved',
       // URL a la que Mercado Pago enviará las notificaciones cuando el pago cambie de estado
-     notification_url: `${DOMAIN}/api/webhooks`,
+      notification_url: `${DOMAIN}/api/webhooks`,
     };
 
     console.log('👉 URL de Webhook enviada a Mercado Pago:', preferenceData.notification_url);
