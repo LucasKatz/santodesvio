@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 
-// Obtener el dominio dinámicamente desde variables de entorno o fallback al de Hostinger
 const rawBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://peru-kangaroo-772851.hostingersite.com';
 const DOMAIN = rawBaseUrl.trim().replace(/\/$/, '');
 
@@ -11,6 +10,13 @@ export async function POST(req) {
     if (!items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json({ error: 'El carrito está vacío o el formato es incorrecto' }, { status: 400 });
     }
+
+    // Identificar si la compra incluye entradas o productos comunes
+    const isTicketPurchase = items.some(item => 
+      item.id?.toString().toLowerCase().includes('ticket') || 
+      item.name?.toLowerCase().includes('entrada') ||
+      item.name?.toLowerCase().includes('ticket')
+    );
 
     // 1. Mapear y sanear cada ítem recibido
     const formattedItems = items.map((item, index) => {
@@ -31,17 +37,16 @@ export async function POST(req) {
       };
     });
 
-    // 2. Construir el objeto de preferencia para Mercado Pago
+    // 2. Construir la preferencia
     const preferenceData = {
       items: formattedItems,
-      // Metadata para recuperar los datos y los ítems en el webhook sin necesidad de base de datos
       metadata: {
+        order_type: isTicketPurchase ? 'ticket' : 'products', // Identificador clave
         name: payer?.name || '',
         last_name: payer?.lastName || '',
         dni: payer?.dni || '',
         phone: payer?.phone || '',
         email: payer?.email || '',
-        // AQUÍ GUARDAMOS EL DETALLE DE LOS PRODUCTOS PARA RECUPERAR EN EL WEBHOOK
         cart_items: formattedItems.map(item => ({
           title: item.title,
           quantity: item.quantity,
@@ -54,18 +59,14 @@ export async function POST(req) {
         email: payer?.email || '',
       },
       back_urls: {
-        success: `${DOMAIN}/thanks`,
+        success: isTicketPurchase ? `${DOMAIN}/ticket?status=approved` : `${DOMAIN}/thanks`,
         failure: `${DOMAIN}/cart?status=failure`,
         pending: `${DOMAIN}/cart?status=pending`,
       },
       auto_return: 'approved',
-      // URL a la que Mercado Pago enviará las notificaciones cuando el pago cambie de estado
       notification_url: `${DOMAIN}/api/webhooks`,
     };
 
-    console.log('👉 URL de Webhook enviada a Mercado Pago:', preferenceData.notification_url);
-
-    // 3. Crear la preferencia llamando a la API de Mercado Pago
     const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
       method: 'POST',
       headers: {
@@ -78,17 +79,7 @@ export async function POST(req) {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error('=== ERROR MERCADOPAGO DETALLADO ===');
-      console.error(JSON.stringify(data, null, 2));
-      console.error('==================================');
-
-      return NextResponse.json(
-        {
-          error: data.message || 'Error en la API de MercadoPago',
-          details: data.cause || data,
-        },
-        { status: response.status }
-      );
+      return NextResponse.json({ error: data.message || 'Error en MercadoPago' }, { status: response.status });
     }
 
     return NextResponse.json({
@@ -96,7 +87,7 @@ export async function POST(req) {
     });
 
   } catch (error) {
-    console.error('Error interno en endpoint checkout:', error.message);
-    return NextResponse.json({ error: error.message || 'Error interno del servidor' }, { status: 500 });
+    console.error('Error en checkout:', error.message);
+    return NextResponse.json({ error: error.message || 'Error interno' }, { status: 500 });
   }
 }
