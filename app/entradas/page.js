@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import FestivalFormUI from '@/components/FestivalFormUI'; // Verifica que la ruta de importación sea la correcta
+import FestivalFormUI from '@/components/Festival/FormUI';
 
 export default function PageEntradas() {
   const [formData, setFormData] = useState({
