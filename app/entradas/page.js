@@ -1,18 +1,22 @@
 'use client';
 
 import { useState } from 'react';
-import FestivalFormUI from '@/components/Festival/FormUI';
+import { useCart } from '@/context/CartContext'; // Ajusta la ruta a tu CartContext
+import { useRouter } from 'next/navigation';
+import FestivalFormUI from '@/components/FestivalFormUI';
 
 export default function PageEntradas() {
+  const { addToCart } = useCart();
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     name: '',
     lastName: '',
     dni: '',
     email: '',
-    phone: '',
   });
 
-  const [loading, setLoading] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,60 +26,33 @@ export default function PageEntradas() {
     }));
   };
 
-  const handleComprarEntrada = async (e) => {
+  const handleAddToCart = (e) => {
     e.preventDefault();
-    setLoading(true);
 
-    try {
-      // 1. Armamos el payload estructurado exactamente como lo espera checkout/route.js
-      const payload = {
-        items: [
-          {
-            id: 'ticket-festival-santo-desvio',
-            name: 'Entrada Santo Desvío Festival Vol. I',
-            price: 15000,
-            quantity: 1,
-            image: '/FESTIVAL.jpeg',
-          },
-        ],
-        payer: {
-          name: formData.name,
-          lastName: formData.lastName,
-          dni: formData.dni,
-          email: formData.email,
-          phone: formData.phone || '',
-        },
-      };
+    // 1. Crear el ítem de la entrada con la cantidad seleccionada
+    const ticketItem = {
+      id: 'ticket-festival-santo-desvio',
+      name: 'Entrada Santo Desvío Festival Vol. I',
+      price: 15000,
+      quantity: quantity,
+      image: '/FESTIVAL.jpeg',
+      payerData: formData, // Guardamos los datos del titular
+    };
 
-      // 2. Enviamos la petición directamente a la pasarela
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+    // 2. Sumar al carrito global
+    addToCart(ticketItem);
 
-      const data = await res.json();
-
-      if (res.ok && data.init_point) {
-        // Redirigimos directamente al checkout de Mercado Pago
-        window.location.href = data.init_point;
-      } else {
-        alert(data.error || 'Ocurrió un error al conectar con MercadoPago');
-      }
-    } catch (error) {
-      console.error('Error procesando entrada:', error);
-      alert('Ocurrió un error al conectar con MercadoPago');
-    } finally {
-      setLoading(false);
-    }
+    // 3. Redirigir al carrito para continuar con el pago
+    router.push('/cart');
   };
 
   return (
     <FestivalFormUI
       formData={formData}
       onChange={handleChange}
-      onSubmit={handleComprarEntrada}
-      loading={loading}
+      onSubmit={handleAddToCart}
+      quantity={quantity}
+      onQuantityChange={setQuantity}
     />
   );
 }

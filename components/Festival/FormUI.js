@@ -1,4 +1,4 @@
-export default function FestivalFormUI({ formData, onChange, onSubmit, loading }) {
+export default function FestivalFormUI({ formData, onChange, onSubmit, loading, quantity = 1, onQuantityChange }) {
   return (
     <div className="max-w-2xl mx-auto my-12 px-4">
       <div className="border-2 border-[#F2A21B] bg-[#121212] p-8 relative shadow-2xl">
@@ -72,13 +72,39 @@ export default function FestivalFormUI({ formData, onChange, onSubmit, loading }
             </div>
           </div>
 
+          {/* Selector de Cantidad de Entradas */}
+          <div className="flex flex-col items-center justify-center pt-2">
+            <label className="block font-santo-alt text-[#F2A21B] tracking-wider uppercase mb-2">
+              Cantidad de Entradas ($15.000 c/u)
+            </label>
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                onClick={() => onQuantityChange && onQuantityChange(Math.max(1, quantity - 1))}
+                className="w-10 h-10 bg-[#010101] border-2 border-[#F2A21B] text-[#F2A21B] font-bold text-xl hover:bg-[#F2A21B] hover:text-[#010101] transition-colors"
+              >
+                -
+              </button>
+              <span className="font-santo-alt text-2xl text-[#F0EDE4] min-w-[30px] text-center">
+                {quantity}
+              </span>
+              <button
+                type="button"
+                onClick={() => onQuantityChange && onQuantityChange(quantity + 1)}
+                className="w-10 h-10 bg-[#010101] border-2 border-[#F2A21B] text-[#F2A21B] font-bold text-xl hover:bg-[#F2A21B] hover:text-[#010101] transition-colors"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
           <div className="pt-4 text-center">
             <button
               type="submit"
               disabled={loading}
               className="w-full bg-[#F2A21B] text-[#010101] font-santo-alt text-2xl py-4 uppercase font-bold tracking-widest hover:bg-[#F0EDE4] transition-colors disabled:opacity-50"
             >
-              {loading ? 'Procesando...' : 'Pagar Entrada $15.000'}
+              🛒 AGREGAR AL CARRITO (${(15000 * quantity).toLocaleString('es-AR')})
             </button>
           </div>
         </form>
