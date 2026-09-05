@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useCart } from '@/context/CartContext'; // Ajusta la ruta a tu CartContext
 import { useRouter } from 'next/navigation';
-import FestivalFormUI from '@/components/FestivalFormUI';
+import FestivalFormUI from '@/components/Festival/FormUI';
 
 export default function PageEntradas() {
   const { addToCart } = useCart();
