@@ -11,14 +11,7 @@ export async function POST(req) {
       return NextResponse.json({ error: 'El carrito está vacío o el formato es incorrecto' }, { status: 400 });
     }
 
-    // Identificar si la compra incluye entradas o productos comunes
-    const isTicketPurchase = items.some(item => 
-      item.id?.toString().toLowerCase().includes('ticket') || 
-      item.name?.toLowerCase().includes('entrada') ||
-      item.name?.toLowerCase().includes('ticket')
-    );
-
-    // 1. Mapear y sanear cada ítem recibido
+    // 1. Mapear y sanear cada ítem recibido por igual
     const formattedItems = items.map((item, index) => {
       const price = Number(item.price);
       const quantity = Number(item.quantity);
@@ -37,11 +30,11 @@ export async function POST(req) {
       };
     });
 
-    // 2. Construir la preferencia
+    // 2. Construir la preferencia unificada
     const preferenceData = {
       items: formattedItems,
       metadata: {
-        order_type: isTicketPurchase ? 'ticket' : 'products', // Identificador clave
+        order_type: 'products', // Comportamiento único para todo la tienda
         name: payer?.name || '',
         last_name: payer?.lastName || '',
         dni: payer?.dni || '',
@@ -59,7 +52,7 @@ export async function POST(req) {
         email: payer?.email || '',
       },
       back_urls: {
-        success: isTicketPurchase ? `${DOMAIN}/ticket?status=approved` : `${DOMAIN}/thanks`,
+        success: `${DOMAIN}/thanks`,
         failure: `${DOMAIN}/cart?status=failure`,
         pending: `${DOMAIN}/cart?status=pending`,
       },
