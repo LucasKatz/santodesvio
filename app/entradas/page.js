@@ -29,20 +29,17 @@ export default function PageEntradas() {
   const handleAddToCart = (e) => {
     e.preventDefault();
 
-    // 1. Crear el ítem de la entrada con la cantidad seleccionada
     const ticketItem = {
       id: 'ticket-festival-santo-desvio',
       name: 'Entrada Santo Desvío Festival Vol. I',
       price: 15000,
-      quantity: quantity,
       image: '/FESTIVAL.jpeg',
-      payerData: formData, // Guardamos los datos del titular
+      payerData: formData,
     };
 
-    // 2. Sumar al carrito global
-    addToCart(ticketItem);
+    // Pasamos el ítem Y la cantidad real elegida en el selector
+    addToCart(ticketItem, quantity);
 
-    // 3. Redirigir al carrito para continuar con el pago
     router.push('/cart');
   };
 
