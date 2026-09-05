@@ -1,38 +1,81 @@
 'use client';
 
-import { useCart } from '@/context/CartContext'; // Ajusta la ruta a tu CartContext
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import FestivalFormUI from '@/components/FestivalFormUI'; // Verifica que la ruta de importación sea la correcta
 
-export default function FormularioEntradas() {
-  const { addToCart } = useCart();
-  const router = useRouter();
+export default function PageEntradas() {
+  const [formData, setFormData] = useState({
+    name: '',
+    lastName: '',
+    dni: '',
+    email: '',
+    phone: '',
+  });
 
-  const handleComprarEntrada = (e) => {
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleComprarEntrada = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    // 1. Crear el objeto del ítem Entrada
-    const ticketItem = {
-      id: 'ticket-festival-santo-desvio',
-      name: 'Entrada Santo Desvío Festival Vol. I',
-      price: 5000, // Ajusta al precio real de la entrada
-      quantity: 1, // O la cantidad seleccionada en el formulario
-      image: '/FESTIVAL.jpeg',
-    };
+    try {
+      // 1. Armamos el payload estructurado exactamente como lo espera checkout/route.js
+      const payload = {
+        items: [
+          {
+            id: 'ticket-festival-santo-desvio',
+            name: 'Entrada Santo Desvío Festival Vol. I',
+            price: 15000,
+            quantity: 1,
+            image: '/FESTIVAL.jpeg',
+          },
+        ],
+        payer: {
+          name: formData.name,
+          lastName: formData.lastName,
+          dni: formData.dni,
+          email: formData.email,
+          phone: formData.phone || '',
+        },
+      };
 
-    // 2. Agregar al carrito
-    addToCart(ticketItem);
+      // 2. Enviamos la petición directamente a la pasarela
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
 
-    // 3. Redirigir al carrito para completar el flujo unificado
-    router.push('/cart');
+      const data = await res.json();
+
+      if (res.ok && data.init_point) {
+        // Redirigimos directamente al checkout de Mercado Pago
+        window.location.href = data.init_point;
+      } else {
+        alert(data.error || 'Ocurrió un error al conectar con MercadoPago');
+      }
+    } catch (error) {
+      console.error('Error procesando entrada:', error);
+      alert('Ocurrió un error al conectar con MercadoPago');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    // Conserva todo tu JSX y tus clases de Tailwind exactamente igual
-    <form onSubmit={handleComprarEntrada}>
-      {/* Tus campos de formulario de entradas */}
-      <button type="submit" className="bg-[#D4AF37] text-black font-bold py-3 px-8 rounded-full uppercase">
-        🎟️ Comprar Entradas
-      </button>
-    </form>
+    <FestivalFormUI
+      formData={formData}
+      onChange={handleChange}
+      onSubmit={handleComprarEntrada}
+      loading={loading}
+    />
   );
 }
