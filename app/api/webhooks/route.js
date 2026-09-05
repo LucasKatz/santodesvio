@@ -135,7 +135,7 @@ export async function POST(req) {
 
         const ADMIN_EMAIL = 'santodesvio@gmail.com';
 
-        if (orderType === 'ticket') {
+        /*if (orderType === 'ticket') {
           // --- PROCESAR COMPRA DE ENTRADA ---
           const ticketCode = generateTicketCode();
           const qrContent = 
@@ -148,7 +148,7 @@ export async function POST(req) {
             `Monto Pagado: $${amount} ARS\n` +
             `ID Transacción MP: ${id}`;
 
-          const qrBase64 = await generateQRCode(qrContent);
+          const qrBase64 = await generateQRCode(qrContent);*/
 
           // 1. Enviar al comprador
           if (email) {
