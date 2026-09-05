@@ -39,7 +39,7 @@ export default function PageEntradas() {
         <form onSubmit={handleAddToCart} className="space-y-6">
           <div className="flex flex-col items-center justify-center pt-2">
             <label className="block font-santo-alt text-[#F2A21B] tracking-wider uppercase mb-2">
-              Cantidad de Entradas ($15.000 c/u)
+              Cantidad de Entradas ($150 c/u)
             </label>
             <div className="flex items-center gap-4">
               <button
@@ -66,7 +66,7 @@ export default function PageEntradas() {
             type="submit"
             className="w-full bg-[#F2A21B] text-[#010101] font-santo-alt text-2xl py-4 uppercase font-bold tracking-widest hover:bg-[#F0EDE4] transition-colors"
           >
-            🛒 AGREGAR AL CARRITO (${(15000 * quantity).toLocaleString('es-AR')})
+            🛒 AGREGAR AL CARRITO (${(150 * quantity).toLocaleString('es-AR')})
           </button>
         </form>
       </div>
