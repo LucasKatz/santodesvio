@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 
-// Dominio principal de producción de Vercel para las devoluciones y Webhooks
-const DOMAIN = 'https://santodesvio-ebon.vercel.app';
+// Obtener el dominio dinámicamente desde variables de entorno o fallback al de Hostinger
+const rawBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://peru-kangaroo-772851.hostingersite.com';
+const DOMAIN = rawBaseUrl.trim().replace(/\/$/, '');
 
 export async function POST(req) {
   try {
