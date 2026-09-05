@@ -54,7 +54,7 @@ export async function POST(req) {
       },
       auto_return: 'approved',
       // URL a la que Mercado Pago enviará las notificaciones cuando el pago cambie de estado
-      notification_url: `${DOMAIN}/api/webhooks/mercadopago`,
+     notification_url: `${DOMAIN}/api/webhooks`,
     };
 
     console.log('👉 URL de Webhook enviada a Mercado Pago:', preferenceData.notification_url);
