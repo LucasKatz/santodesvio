@@ -1,24 +1,20 @@
-import mongoose from 'mongoose'; // Faltaba esta importación
 import BeerCard from './cards';
-import dbConnect from '@/lib/dbConnect';
-import Beer from '@/models/beer'; // Corregido a Mayúscula 'Beer'
+import clientPromise from '@/mongodb';
 
 async function getBeers() {
   try {
-    await dbConnect();
+    const client = await clientPromise;
     
-    // Ahora mongoose está importado correctamente
-    console.log("Conectado a la DB:", mongoose.connection.name); 
-
-    const beers = await Beer.find({}).lean();
-    console.log("Cervezas encontradas:", beers.length);
+    // Apuntamos directo a la DB "Beers" y a la colección "SantoDesvio"
+    const db = client.db("Beers");
+    const beers = await db.collection("SantoDesvio").find({}).toArray();
 
     return beers.map((beer) => ({
       ...beer,
       _id: beer._id.toString(),
     }));
   } catch (error) {
-    console.error('Error al obtener cervezas desde MongoDB:', error);
+    console.error("Error al obtener cervezas:", error);
     return [];
   }
 }
