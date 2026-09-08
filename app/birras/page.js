@@ -6,13 +6,15 @@ import BeerCard from '@/components/catalogue/cards';
 const containerStyles = {
     display: 'flex',
     flexWrap: 'wrap',
-    justifyContent: 'center', // Centrado horizontal de las tarjetas
-    alignItems: 'center',     // Centrado vertical
+    justifyContent: 'center', // Centrado horizontal de los elementos
+    alignContent: 'center',    // Centrado vertical estable para multilínea (Flex-wrap)
     padding: '20px',
     backgroundColor: '#000',
     minHeight: '100vh',
-    width: '80%',             // Ancho asignado
-    margin: '0 auto',         // Centrado horizontal del contenedor principal
+    width: '80%',              // Ancho de la grilla
+    maxWidth: '1200px',        // Límite máximo para evitar estiramientos extremos
+    margin: '0 auto',          // Centra el bloque en la pantalla
+    boxSizing: 'border-box'
 };
 
 const BeerCatalogue = () => {
@@ -23,12 +25,11 @@ const BeerCatalogue = () => {
         fetch('/api/beers')
             .then((res) => res.json())
             .then((data) => {
-                // Validamos que los datos recibidos sean realmente un array
                 if (Array.isArray(data)) {
                     setBeers(data);
                 } else {
                     console.error('La API no devolvió un array:', data);
-                    setBeers([]); // Evita que se rompa el componente asignando array vacío
+                    setBeers([]);
                 }
                 setLoading(false);
             })
@@ -45,7 +46,6 @@ const BeerCatalogue = () => {
 
     return (
         <div style={containerStyles}>
-            {/* El operador opcional ?. garantiza que sólo mapée si es un array válido */}
             {beers?.map((beer) => (
                 <BeerCard key={beer._id} {...beer} />
             ))}
