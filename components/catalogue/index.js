@@ -21,13 +21,12 @@ const BeerCatalogue = () => {
     }, []);
 
     if (loading) {
-        return <div style={{ color: '#fff', textAlign: 'center', padding: '50px' }}>Cargando catálogo...</div>;
+        return <div className="text-white text-center py-12">Cargando catálogo...</div>;
     }
 
     return (
-        /* Agregado px-6 en móvil, px-12 en tablet y px-20 en pantallas grandes para mayor aire lateral */
-        <div className="bg-black min-h-screen py-10 px-6 md:px-12 lg:px-20">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-items-center max-w-[1280px] mx-auto">
+        <div className="bg-black min-h-screen py-10 px-4 sm:px-8 lg:px-16">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-items-center max-w-7xl mx-auto">
                 {beers.map((beer) => (
                     <BeerCard key={beer._id} {...beer} />
                 ))}
