@@ -27,7 +27,7 @@ export default function BeerCard({ id, name, style, price, ibu, abv, srm, descri
   };
 
   return (
-    <div className="bg-[#1c1c1c] border border-[#F2A21B] rounded-lg p-4 w-full max-w-[220px] m-3 text-white font-sans flex flex-col items-center text-center shadow-xl">
+    <div className="bg-[#1c1c1c] border border-[#F2A21B] rounded-lg p-4 w-full max-w-[220px] text-white font-sans flex flex-col items-center text-center shadow-xl">
 
       {/* Contenedor de la Imagen (Sin neón ni resplandor) */}
       <div className="group relative w-full h-64 mb-4 rounded-md overflow-hidden cursor-pointer border border-[#F2A21B]/30 transition-all duration-300 hover:border-[#F2A21B]">
