@@ -9,7 +9,8 @@ const containerStyles = {
     justifyContent: 'center',
     padding: '20px',
     backgroundColor: '#000',
-    minHeight: '100vh'
+    minHeight: '100vh',
+    width: '80%'
 };
 
 const BeerCatalogue = () => {
