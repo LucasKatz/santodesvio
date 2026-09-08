@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 
-export default function BeerCard({ id, name, style, price, ibu, abv, srm, description, imageUrl }) {
+export default function BeerCard({ id, name, style, price, description, imageUrl }) {
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
 
