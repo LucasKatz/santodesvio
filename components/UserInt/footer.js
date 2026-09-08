@@ -38,7 +38,7 @@ export default function Footer() {
                 alt="Santo Desvío Logo"
                 fill
                 sizes="(max-width: 640px) 96px, 112px"
-                className="object-cover"
+                className="object-contain object-center scale-132"
                 priority
               />
             </div>
