@@ -6,11 +6,13 @@ import BeerCard from '@/components/catalogue/cards';
 const containerStyles = {
     display: 'flex',
     flexWrap: 'wrap',
-    justifyContent: 'center',
+    justifyContent: 'center', // Centrado horizontal de las tarjetas
+    alignItems: 'center',     // Centrado vertical
     padding: '20px',
     backgroundColor: '#000',
     minHeight: '100vh',
-    width: '80%'
+    width: '80%',             // Ancho asignado
+    margin: '0 auto',         // Centrado horizontal del contenedor principal
 };
 
 const BeerCatalogue = () => {
