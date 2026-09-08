@@ -34,7 +34,7 @@ export default function Footer() {
             {/* Móvil y Tablet */}
             <div className="w-24 h-24 sm:w-28 sm:h-28 relative rounded-full overflow-hidden border-2 border-[#F2A21B] bg-[#121212] shadow-xl shrink-0 lg:hidden">
               <Image
-                src="/Logo.jpeg"
+                src="/logo2.png"
                 alt="Santo Desvío Logo"
                 fill
                 sizes="(max-width: 640px) 96px, 112px"

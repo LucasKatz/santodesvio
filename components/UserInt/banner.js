@@ -57,7 +57,7 @@ export default function HeroBanner() {
         {/* Imagen Móvil de fondo (Anclada abajo para desplazar la lata hacia el pie) */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="/bannerV2.jpg"
+            src="/bannerV.png"
             alt="Santo Desvío Banner Mobile"
             fill
             sizes="100vw"
