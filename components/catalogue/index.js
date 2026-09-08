@@ -25,13 +25,12 @@ const BeerCatalogue = () => {
     }
 
     return (
-        <div className="bg-black min-h-screen p-5">
-            {/* Grid forzado a 4 columnas en desktop (lg:grid-cols-4) con separación de gap-6 */}
-            {/* Cambia gap-6 por el nivel de separación que prefieras */}
+        /* Agregado px-6 en móvil, px-12 en tablet y px-20 en pantallas grandes para mayor aire lateral */
+        <div className="bg-black min-h-screen py-10 px-6 md:px-12 lg:px-20">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-items-center max-w-[1280px] mx-auto">
-                                {beers.map((beer) => (
-                <BeerCard key={beer._id} {...beer} />
-            ))}
+                {beers.map((beer) => (
+                    <BeerCard key={beer._id} {...beer} />
+                ))}
             </div>
         </div>
     );
