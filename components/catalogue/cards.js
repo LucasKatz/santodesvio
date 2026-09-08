@@ -29,16 +29,16 @@ export default function BeerCard({ id, name, style, price, ibu, abv, srm, descri
   return (
     <div className="bg-[#1c1c1c] border border-[#F2A21B] rounded-lg p-4 w-full max-w-[220px] text-white font-sans flex flex-col items-center text-center shadow-xl">
 
-      {/* Contenedor de la Imagen (Sin neón ni resplandor) */}
+      {/* Contenedor de la Imagen */}
       <div className="group relative w-full h-64 mb-4 rounded-md overflow-hidden cursor-pointer border border-[#F2A21B]/30 transition-all duration-300 hover:border-[#F2A21B]">
         <Image
-          src={imageUrl}
+          src={imageUrl || '/logo2.png'}
           alt={name}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
 
-        {/* Overlay con la Descripción al hacer Hover (Plano, sin brillos) */}
+        {/* Overlay con la Descripción al hacer Hover */}
         <div className="absolute inset-0 bg-black/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4 border-2 border-[#F2A21B]">
           <p
             className="text-[#F2A21B] text-sm leading-relaxed text-center uppercase tracking-wide"
