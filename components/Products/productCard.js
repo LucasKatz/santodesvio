@@ -1,4 +1,4 @@
-import Image from 'next/image';
+/*import Image from 'next/image';
 
 export default function ProductCard({ product }) {
   return (
@@ -26,4 +26,4 @@ export default function ProductCard({ product }) {
       </div>
     </div>
   );
-}
+}*/

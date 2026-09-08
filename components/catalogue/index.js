@@ -3,21 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import BeerCard from './cards';
 
-const containerStyles = {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    padding: '20px',
-    backgroundColor: '#000',
-    minHeight: '100vh'
-};
-
 const BeerCatalogue = () => {
     const [beers, setBeers] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Ahora la consulta es interna a tu propio servidor de Next.js
         fetch('/api/beers')
             .then((res) => res.json())
             .then((data) => {
@@ -35,10 +25,14 @@ const BeerCatalogue = () => {
     }
 
     return (
-        <div style={containerStyles}>
-            {beers.map((beer) => (
+        <div className="bg-black min-h-screen p-5">
+            {/* Grid forzado a 4 columnas en desktop (lg:grid-cols-4) con separación de gap-6 */}
+            {/* Cambia gap-6 por el nivel de separación que prefieras */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-items-center max-w-[1280px] mx-auto">
+                                {beers.map((beer) => (
                 <BeerCard key={beer._id} {...beer} />
             ))}
+            </div>
         </div>
     );
 };

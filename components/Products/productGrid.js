@@ -1,4 +1,4 @@
-import ProductCard from "./productCard";
+/*import ProductCard from "./productCard";
 
 const products = [
   {
@@ -77,4 +77,4 @@ export default function ProductGrid() {
       </div>
     </section>
   );
-}
+}*/

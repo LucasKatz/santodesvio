@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -45,27 +46,29 @@ export default function Navbar() {
 
           {/* Enlaces Izquierda (Desktop) */}
           <div className="hidden md:flex items-center gap-8 font-santo-alt text-lg md:text-xl text-white tracking-wider uppercase">
-            <a href="birras" className="hover:text-santo-ochre transition-colors">Nuestras Birras</a>
-            <a href="festival" className="hover:text-santo-ochre transition-colors">Eventos</a>
+            <Link href="/birras" className="hover:text-santo-ochre transition-colors">Nuestras Birras</Link>
+            <Link href="/festival" className="hover:text-santo-ochre transition-colors">Eventos</Link>
           </div>
-          {/* Logo Central Flotante (Agrandado) */}
+
+          {/* Logo Central Flotante con enlace a Inicio ("/") */}
           <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-20">
-            {/* Aumentamos las medidas: w-20 h-20 en móvil, sm:w-28 sm:h-28 en tablets y md:w-32 md:h-32 en desktop */}
-            <div className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 relative rounded-full overflow-hidden border-4 border-[#F2A21B] bg-[#121212] shadow-2xl">
-              <Image
-                src="/logo2.png"
-                alt="Santo Desvío Logo"
-                fill
-                className="object-contain object-center scale-132"
-                priority
-              />
-            </div>
+            <Link href="/" className="block group">
+              <div className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 relative rounded-full overflow-hidden border-4 border-[#F2A21B] bg-[#121212] shadow-2xl transition-transform group-hover:scale-105">
+                <Image
+                  src="/logo2.png"
+                  alt="Santo Desvío Logo"
+                  fill
+                  className="object-contain object-center scale-132"
+                  priority
+                />
+              </div>
+            </Link>
           </div>
 
           {/* Enlaces Derecha (Desktop) */}
           <div className="hidden md:flex items-center gap-8 font-santo-alt text-lg md:text-xl text-white tracking-wider uppercase">
-            <a href="merch" className="hover:text-santo-ochre transition-colors">Merch</a>
-            <a href="contacto" className="hover:text-santo-ochre transition-colors">Contacto</a>
+            <Link href="/merch" className="hover:text-santo-ochre transition-colors">Merch</Link>
+            <Link href="/contacto" className="hover:text-santo-ochre transition-colors">Contacto</Link>
           </div>
 
           {/* Spacer invisible para equilibrar el botón hamburguesa en móvil */}
@@ -77,35 +80,35 @@ export default function Navbar() {
         {isOpen && (
           <div className="md:hidden mt-2 border-2 border-[#F2A21B] bg-[#121212] p-4 text-center">
             <nav className="flex flex-col gap-4 font-santo-alt text-lg text-white tracking-wider uppercase">
-              <a
-                href="birras"
+              <Link
+                href="/birras"
                 onClick={() => setIsOpen(false)}
                 className="hover:text-[#F2A21B] transition-colors py-1"
               >
                 Nuestras Birras
-              </a>
+              </Link>
 
-              <a
-                href="festival"
+              <Link
+                href="/festival"
                 onClick={() => setIsOpen(false)}
                 className="hover:text-[#F2A21B] transition-colors py-1"
               >
                 Eventos
-              </a>
-              <a
-                href="merch"
+              </Link>
+              <Link
+                href="/merch"
                 onClick={() => setIsOpen(false)}
                 className="hover:text-[#F2A21B] transition-colors py-1"
               >
                 Merch
-              </a>
-              <a
-                href="contacto"
+              </Link>
+              <Link
+                href="/contacto"
                 onClick={() => setIsOpen(false)}
                 className="hover:text-[#F2A21B] transition-colors py-1"
               >
                 Contacto
-              </a>
+              </Link>
             </nav>
           </div>
         )}

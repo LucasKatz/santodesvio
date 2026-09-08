@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { generateQRCode } from '@/app/services/ticketService'; // Asegúrate de que este path sea correcto
 
+
 export const dynamic = 'force-dynamic';
 
 const transporter = nodemailer.createTransport({

@@ -19,7 +19,7 @@ export default function MerchCard({ id, name, type, price, description, imageUrl
         name: selectedVariant && variants?.length > 1 ? `${name} (${selectedVariant})` : name,
         price: price || 0,
         image: imageUrl,
-        style: type, // Reutilizamos 'style' para mostrar la categoría o tipo en el carrito
+        style: type,
       },
       quantity
     );
@@ -28,35 +28,44 @@ export default function MerchCard({ id, name, type, price, description, imageUrl
   };
 
   return (
-    <div className="bg-[#1c1c1c] border border-[#F2A21B] rounded-lg p-5 max-w-[300px] m-2.5 text-white font-sans flex flex-col items-center text-center shadow-xl">
+    <div className="bg-[#1c1c1c] border border-[#F2A21B] rounded-lg p-4 w-full max-w-[220px] m-3 text-white font-sans flex flex-col items-center text-center shadow-xl">
       
-      {/* Contenedor de la Imagen */}
-      <div className="relative w-36 h-36 mb-4">
+      {/* Contenedor de la Imagen (Sin neón ni resplandor) */}
+      <div className="group relative w-full h-64 mb-4 rounded-md overflow-hidden cursor-pointer border border-[#F2A21B]/30 transition-all duration-300 hover:border-[#F2A21B]">
         <Image
           src={imageUrl || '/logo2.png'}
           alt={name}
           fill
-          className="object-contain"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
+
+        {/* Overlay con la Descripción en Hover (Plano, sin brillos) */}
+        <div className="absolute inset-0 bg-black/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4 border-2 border-[#F2A21B]">
+          <p 
+            className="text-[#F2A21B] text-sm leading-relaxed text-center uppercase tracking-wide"
+            style={{ fontFamily: 'Anton, sans-serif' }}
+          >
+            {description}
+          </p>
+        </div>
       </div>
 
-      {/* Nombre y Tipo de Producto */}
-      <h3 className="text-[#F2A21B] text-2xl font-santo-alt font-bold mb-1 uppercase tracking-wider">
+      {/* Nombre y Tipo */}
+      <h3 className="text-[#F2A21B] text-xl font-santo-alt font-bold mb-1 uppercase tracking-wider">
         {name}
       </h3>
       
-      <p className="text-xs text-gray-400 mb-2 font-medium tracking-wide uppercase">{type}</p>
+      <p className="text-xs text-gray-300 mb-3 font-medium">{type}</p>
       
       {price && (
-        <span className="text-2xl font-bold text-white mb-3">
+        <span className="text-lg font-bold text-white mb-4">
           ${price.toLocaleString('es-AR')}
         </span>
       )}
 
-      {/* Selector de Variante/Talle si existe más de una */}
+      {/* Selector de Variante/Talle si aplica */}
       {variants && variants.length > 1 && (
         <div className="w-full mb-3">
-          <label className="text-xs text-gray-400 block mb-1">Seleccionar Variante:</label>
           <select
             value={selectedVariant}
             onChange={(e) => setSelectedVariant(e.target.value)}
@@ -71,13 +80,8 @@ export default function MerchCard({ id, name, type, price, description, imageUrl
         </div>
       )}
 
-      {/* Descripción */}
-      <p className="text-xs text-gray-300 my-2 flex-grow leading-relaxed">
-        {description}
-      </p>
-
       {/* Selector de Cantidad */}
-      <div className="flex items-center justify-between w-full my-3 bg-[#121212] border border-[#F2A21B]/40 rounded p-1">
+      <div className="flex items-center justify-between w-full mb-3 bg-[#121212] border border-[#F2A21B]/40 rounded p-1 mt-auto">
         <button
           onClick={handleDecrement}
           type="button"
@@ -85,7 +89,7 @@ export default function MerchCard({ id, name, type, price, description, imageUrl
         >
           -
         </button>
-        <span className="font-bold text-white text-sm select-none">
+        <span className="font-bold text-white text-xs select-none">
           {quantity} {quantity === 1 ? 'unidad' : 'unidades'}
         </span>
         <button
@@ -97,12 +101,12 @@ export default function MerchCard({ id, name, type, price, description, imageUrl
         </button>
       </div>
 
-      {/* Botón interactivo de Compra */}
+      {/* Botón interactivo */}
       <button
         onClick={handleAddToCart}
-        className="w-full bg-[#F2A21B] hover:bg-[#d48b12] text-[#121212] font-santo-alt font-bold uppercase py-2 px-4 rounded border-2 border-[#F2A21B] transition-all transform hover:scale-105 active:scale-95 shadow-md"
+        className="w-full bg-[#F2A21B] hover:bg-[#d48b12] text-[#121212] font-santo-alt font-bold uppercase py-2 px-3 text-sm rounded border-2 border-[#F2A21B] transition-all transform hover:scale-105 active:scale-95 shadow-md"
       >
-        Agregar al Carrito
+        Pedir ahora
       </button>
     </div>
   );
