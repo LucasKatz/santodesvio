@@ -1,6 +1,6 @@
 // app/page.js
 import HeroBanner from '@/components/UserInt/banner';
-import FabricaPage from './fabrica/fabrica';
+import FabricaPage from '../components/fabrica/fabrica';
 
 export const metadata = {
   title: {
