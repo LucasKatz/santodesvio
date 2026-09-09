@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { toast } from 'react-toastify';
 import { useCart } from '../../context/CartContext';
 
 export default function CartPage() {
@@ -25,12 +26,60 @@ export default function CartPage() {
     });
   };
 
+  // Manejador para eliminar un solo producto con notificación
+  const handleRemoveFromCart = (item) => {
+    removeFromCart(item.id);
+    
+    toast.info(`Se eliminó ${item.name} del carrito.`, {
+      position: 'bottom-right',
+      autoClose: 2500,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: 'dark',
+      style: {
+        backgroundColor: '#121212',
+        color: '#F2A21B',
+        border: '1px solid #F2A21B',
+      },
+    });
+  };
+
+  // Manejador para vaciar todo el carrito con notificación
+  const handleClearCart = () => {
+    clearCart();
+
+    toast.warn('Has vaciado el carrito.', {
+      position: 'bottom-right',
+      autoClose: 2500,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: 'dark',
+      style: {
+        backgroundColor: '#121212',
+        color: '#F2A21B',
+        border: '1px solid #F2A21B',
+      },
+    });
+  };
+
   const handleCheckout = async (e) => {
     e.preventDefault();
 
     // Validar que todos los campos estén completos
     if (!buyer.name || !buyer.lastName || !buyer.dni || !buyer.phone || !buyer.email) {
-      alert('Por favor, completa todos los datos personales para enviar tu ticket.');
+      toast.error('Por favor, completa todos los datos personales.', {
+        position: 'bottom-right',
+        theme: 'dark',
+        style: {
+          backgroundColor: '#121212',
+          color: '#e53e3e',
+          border: '1px solid #e53e3e',
+        },
+      });
       return;
     }
 
@@ -50,11 +99,17 @@ export default function CartPage() {
       if (data.init_point) {
         window.location.href = data.init_point;
       } else {
-        alert('Hubo un error al generar la preferencia de pago.');
+        toast.error('Hubo un error al generar la preferencia de pago.', {
+          position: 'bottom-right',
+          theme: 'dark',
+        });
       }
     } catch (error) {
       console.error('Error al procesar el pago:', error);
-      alert('Ocurrió un error inesperado al conectar con MercadoPago.');
+      toast.error('Ocurrió un error inesperado al conectar con MercadoPago.', {
+        position: 'bottom-right',
+        theme: 'dark',
+      });
     } finally {
       setLoading(false);
     }
@@ -133,7 +188,7 @@ export default function CartPage() {
                 </div>
 
                 <button
-                  onClick={() => removeFromCart(item.id)}
+                  onClick={() => handleRemoveFromCart(item)}
                   className="text-red-500 hover:text-red-400 p-1"
                   title="Eliminar producto"
                 >
@@ -145,7 +200,7 @@ export default function CartPage() {
 
           <div className="flex justify-between items-center pt-4">
             <button
-              onClick={clearCart}
+              onClick={handleClearCart}
               className="text-xs sm:text-sm text-gray-400 hover:text-red-400 underline transition-colors"
             >
               Vaciar Carrito

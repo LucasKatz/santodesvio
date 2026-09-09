@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { toast } from 'react-toastify';
 import { useCart } from '@/context/CartContext';
 
 export default function MerchCard({ id, name, type, price, description, imageUrl, variants }) {
@@ -13,15 +14,33 @@ export default function MerchCard({ id, name, type, price, description, imageUrl
   const handleDecrement = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
   const handleAddToCart = () => {
-    addToCart(
+    const itemToAdd = {
+      id: selectedVariant ? `${id}-${selectedVariant.toLowerCase()}` : id,
+      name: selectedVariant && variants?.length > 1 ? `${name} (${selectedVariant})` : name,
+      price: price || 0,
+      image: imageUrl,
+      style: type,
+    };
+
+    addToCart(itemToAdd, quantity);
+
+    // Notificación Toastify
+    toast.success(
+      `¡Agregado! ${quantity} ${quantity === 1 ? 'unidad' : 'unidades'} de ${itemToAdd.name} al carrito.`,
       {
-        id: selectedVariant ? `${id}-${selectedVariant.toLowerCase()}` : id,
-        name: selectedVariant && variants?.length > 1 ? `${name} (${selectedVariant})` : name,
-        price: price || 0,
-        image: imageUrl,
-        style: type,
-      },
-      quantity
+        position: 'bottom-right',
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'dark',
+        style: {
+          backgroundColor: '#121212',
+          color: '#F2A21B',
+          border: '1px solid #F2A21B',
+        },
+      }
     );
 
     setQuantity(1);
@@ -30,7 +49,7 @@ export default function MerchCard({ id, name, type, price, description, imageUrl
   return (
     <div className="bg-[#1c1c1c] border border-[#F2A21B] rounded-lg p-4 w-full max-w-[220px] m-3 text-white font-sans flex flex-col items-center text-center shadow-xl">
       
-      {/* Contenedor de la Imagen (Sin neón ni resplandor) */}
+      {/* Contenedor de la Imagen */}
       <div className="group relative w-full h-64 mb-4 rounded-md overflow-hidden cursor-pointer border border-[#F2A21B]/30 transition-all duration-300 hover:border-[#F2A21B]">
         <Image
           src={imageUrl || '/logo2.png'}
@@ -39,7 +58,7 @@ export default function MerchCard({ id, name, type, price, description, imageUrl
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
 
-        {/* Overlay con la Descripción en Hover (Plano, sin brillos) */}
+        {/* Overlay con la Descripción en Hover */}
         <div className="absolute inset-0 bg-black/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4 border-2 border-[#F2A21B]">
           <p 
             className="text-[#F2A21B] text-sm leading-relaxed text-center uppercase tracking-wide"
