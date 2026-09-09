@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
-const rawBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://peru-kangaroo-772851.hostingersite.com';
+// 1. Apuntar directamente a tu dominio oficial de Santo Desvío
+const rawBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.santodesvio.com.ar';
 const DOMAIN = rawBaseUrl.trim().replace(/\/$/, '');
 
 export async function POST(req) {
@@ -11,7 +12,7 @@ export async function POST(req) {
       return NextResponse.json({ error: 'El carrito está vacío o el formato es incorrecto' }, { status: 400 });
     }
 
-    // 1. Mapear y sanear cada ítem recibido por igual
+    // 2. Mapear y sanear productos
     const formattedItems = items.map((item, index) => {
       const price = Number(item.price);
       const quantity = Number(item.quantity);
@@ -30,17 +31,17 @@ export async function POST(req) {
       };
     });
 
-    // 2. Construir la preferencia unificada
+    // 3. Construcción de la preferencia
     const preferenceData = {
       items: formattedItems,
       metadata: {
-        order_type: 'products', // Comportamiento único para todo la tienda
+        order_type: 'products',
         name: payer?.name || '',
         last_name: payer?.lastName || '',
         dni: payer?.dni || '',
         phone: payer?.phone || '',
         email: payer?.email || '',
-        cart_items: formattedItems.map(item => ({
+        cart_items: formattedItems.map((item) => ({
           title: item.title,
           quantity: item.quantity,
           unit_price: item.unit_price,
@@ -50,6 +51,13 @@ export async function POST(req) {
         name: payer?.name || '',
         surname: payer?.lastName || '',
         email: payer?.email || '',
+        phone: {
+          number: payer?.phone || '',
+        },
+        identification: {
+          type: 'DNI',
+          number: payer?.dni || '',
+        },
       },
       back_urls: {
         success: `${DOMAIN}/thanks`,
@@ -72,11 +80,13 @@ export async function POST(req) {
     const data = await response.json();
 
     if (!response.ok) {
+      console.error('Error desde MercadoPago API:', data);
       return NextResponse.json({ error: data.message || 'Error en MercadoPago' }, { status: response.status });
     }
 
+    // 4. Retornar SIEMPRE init_point para Cobros Reales
     return NextResponse.json({
-      init_point: data.sandbox_init_point || data.init_point,
+      init_point: data.init_point,
     });
 
   } catch (error) {
