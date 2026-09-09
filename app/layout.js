@@ -10,15 +10,15 @@ export const metadata = {
   metadataBase: new URL("https://santodesvio.com.ar"),
 
   title: {
-    default: "Santo Desvío | Cerveza artesanal argentina",
+    default: "Santo Desvío | Cerveza artesanal en Ituzaingó, Buenos Aires",
     template: "%s | Santo Desvío",
   },
 
   description:
-    "Cervecería artesanal Santo Desvío. Elaboramos cerveza de autor en [CIUDAD], [PROVINCIA]. Conocé nuestros estilos, dónde comprarlos y cómo visitarnos.",
+    "Cerveza artesanal de autor elaborada en tandas chicas en Ituzaingó, Buenos Aires. Descubrí nuestros estilos, dónde comprarlos y seguí nuestras novedades.",
 
   applicationName: "Santo Desvío",
-  authors: [{ name: "Santo Desvío" }],
+  authors: [{ name: "Santo Desvío", url: "https://santodesvio.com.ar" }],
   creator: "Santo Desvío",
   publisher: "Santo Desvío",
   category: "food and drink",
@@ -26,8 +26,9 @@ export const metadata = {
   keywords: [
     "cerveza artesanal",
     "Santo Desvío",
-    "cervecería artesanal [CIUDAD]",
-    "cerveza artesanal [PROVINCIA]",
+    "cervecería artesanal Ituzaingó",
+    "cerveza artesanal Buenos Aires",
+    "cerveza artesanal zona oeste",
     "IPA artesanal",
     "growler",
     "cerveza tirada",
@@ -42,12 +43,12 @@ export const metadata = {
     locale: "es_AR",
     url: "https://santodesvio.com.ar",
     siteName: "Santo Desvío",
-    title: "Santo Desvío | Cerveza artesanal argentina",
+    title: "Santo Desvío | Cerveza artesanal en Ituzaingó, Buenos Aires",
     description:
-      "Cervecería artesanal de autor en [CIUDAD]. Nuestros estilos, puntos de venta y contacto.",
+      "Cervecería artesanal de autor en Ituzaingó. Nuestros estilos, puntos de venta y contacto.",
     images: [
       {
-        url: "/og-image.jpg", // 1200x630 px en /public
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "Santo Desvío — cerveza artesanal",
@@ -57,8 +58,8 @@ export const metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "Santo Desvío | Cerveza artesanal argentina",
-    description: "Cervecería artesanal de autor en [CIUDAD].",
+    title: "Santo Desvío | Cerveza artesanal en Ituzaingó, Buenos Aires",
+    description: "Cervecería artesanal de autor en Ituzaingó, Buenos Aires.",
     images: ["/og-image.jpg"],
   },
 
@@ -74,14 +75,28 @@ export const metadata = {
     },
   },
 
+  formatDetection: {
+    telephone: false,
+    address: false,
+    email: false,
+  },
+
   icons: {
     icon: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },
 
+  verification: {
+    google: "TU_CODIGO_DE_GOOGLE_SEARCH_CONSOLE",
+    other: {
+      "msvalidate.01": "TU_CODIGO_DE_BING",
+    },
+  },
+};
+
   // Descomentá cuando tengas el código de Search Console (paso 5)
   // verification: { google: "TU_CODIGO_DE_VERIFICACION" },
-};
+
 
 // En Next 15+ viewport y themeColor van en un export separado
 export const viewport = {

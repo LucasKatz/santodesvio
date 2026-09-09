@@ -20,29 +20,29 @@ export const metadata = {
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "Brewery", // usá "Organization" si no tenés local abierto al público
-  "@id": "https://santodesvio.com.ar/#brewery",
+  "@type": "Organization",
+  "@id": "https://santodesvio.com.ar/#organization",
   name: "Santo Desvío",
   url: "https://santodesvio.com.ar",
   logo: "https://santodesvio.com.ar/logo.png",
   image: "https://santodesvio.com.ar/og-image.jpg",
   description:
-    "Cervecería artesanal de autor en [CIUDAD], Argentina. Elaboración en tandas chicas.",
-  telephone: "+54 9 11 XXXX-XXXX",
+    "Cervecería artesanal de autor con sede en Ituzaingó, Buenos Aires, Argentina. Elaboración en tandas chicas.",
   email: "hola@santodesvio.com.ar",
-  priceRange: "$$",
   address: {
     "@type": "PostalAddress",
-    streetAddress: "[CALLE Y NÚMERO]",
-    addressLocality: "[CIUDAD]",
-    addressRegion: "[PROVINCIA]",
-    postalCode: "[CP]",
+    addressLocality: "Ituzaingó",
+    addressRegion: "Buenos Aires",
     addressCountry: "AR",
   },
   sameAs: [
-    "https://www.instagram.com/[usuario]",
-    "https://www.facebook.com/[usuario]",
+    "https://www.instagram.com/santodesvio",
+
   ],
+  // Cuando abras el local, volvés a este bloque: cambiás @type a "Brewery",
+  // agregás streetAddress y postalCode, telephone y priceRange, y sumás
+  // geo + openingHoursSpecification (que ya tenías armado y comentado).
+};
   // Descomentá y ajustá solo si tenés local con horarios al público:
   // geo: { "@type": "GeoCoordinates", latitude: -34.6037, longitude: -58.3816 },
   // openingHoursSpecification: [
@@ -53,7 +53,7 @@ const jsonLd = {
   //     closes: "01:00",
   //   },
   // ],
-};
+
 
 export default function Home() {
   return (
