@@ -2,8 +2,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'La Fábrica | Santo Desvío - Cerveza Artesanal',
-  description: 'Conoce la historia detrás de Santo Desvío y descubre el origen de nuestra cerveza artesanal rebelde.',
+  title: "Nuestras cervezas",           // renderiza "Nuestras cervezas | Santo Desvío"
+  description:
+    "Conocé los estilos de Santo Desvío: [IPA, Golden, Stout...]. Elaboración artesanal en tandas chicas.",
+  alternates: { canonical: "/cervezas" },
+  openGraph: {
+    title: "Nuestras cervezas | Santo Desvío",
+    description: "Los estilos que elaboramos en nuestra cervecería artesanal.",
+    url: "/cervezas",
+  },
 };
 
 export default function FabricaPage() {

@@ -1,6 +1,19 @@
 import MerchCard from "@/components/Merch/MerchCard";
 import clientPromise from "@/mongodb";
 
+
+export const metadata = {
+  title: "Nuestras cervezas",           // renderiza "Nuestras cervezas | Santo Desvío"
+  description:
+    "Conocé los estilos de Santo Desvío: [IPA, Golden, Stout...]. Elaboración artesanal en tandas chicas.",
+  alternates: { canonical: "/cervezas" },
+  openGraph: {
+    title: "Nuestras cervezas | Santo Desvío",
+    description: "Los estilos que elaboramos en nuestra cervecería artesanal.",
+    url: "/cervezas",
+  },
+};
+
 // Esta función ahora consulta directamente a MongoDB sin pasar por HTTP/fetch
 async function getMerchandise() {
   try {

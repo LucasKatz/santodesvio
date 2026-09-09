@@ -2,8 +2,15 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 export const metadata = {
-  title: 'Festival | Santo Desvío - Fiesta de Cerveza Artesanal',
-  description: 'Conoce los detalles del Santo Desvío Festival Vol. I y adquiere tus entradas.',
+  title: "Nuestras cervezas",           
+  description:
+    "Conocé los estilos de Santo Desvío: [IPA, Golden, Stout...]. Elaboración artesanal en tandas chicas.",
+  alternates: { canonical: "/cervezas" },
+  openGraph: {
+    title: "Nuestras cervezas | Santo Desvío",
+    description: "Los estilos que elaboramos en nuestra cervecería artesanal.",
+    url: "/cervezas",
+  },
 };
 
 export default function FestivalPage() {
