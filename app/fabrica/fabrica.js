@@ -63,7 +63,7 @@ export default function FabricaPage() {
 
               <p>	Porque Santo Desvío no nació en una agencia, ni en una presentación de marketing.							</p><br></br>
 
-              <p>	Nació acá. Entre tanques, fuego y lupulo.				<br></br> 	Santo Desvío · Fábrica rebelde de cerveza.				</p>
+              <p>	Nació acá. Entre tanques, fuego y lupulo.				<br></br> 	Santo Desvío · Cerveza independiente.				</p>
             </div>
 
             {/* Ficha de Valores Rápidos */}
