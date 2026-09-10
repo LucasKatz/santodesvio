@@ -1,28 +1,49 @@
 import MerchCard from "@/components/Merch/MerchCard";
 import clientPromise from "@/mongodb";
 
-
 export const metadata = {
-  title: "Nuestras cervezas",           // renderiza "Nuestras cervezas | Santo Desvío"
+  title: "Merchandising Oficial | Santo Desvío",
   description:
-    "Conocé los estilos de Santo Desvío: [IPA, Golden, Stout...]. Elaboración artesanal en tandas chicas.",
-  alternates: { canonical: "/cervezas" },
+    "Llevá la actitud rebelde a todos lados. Remeras, vasos, gorras y accesorios oficiales de Santo Desvío, cerveza artesanal independiente.",
+  keywords: [
+    "merchandising Santo Desvío",
+    "remeras cerveza artesanal",
+    "vasos cerveceros Ituzaingó",
+    "accesorios cerveza independiente",
+    "tienda oficial Santo Desvío",
+  ],
+  alternates: { canonical: "https://www.santodesvio.com.ar/merch" },
   openGraph: {
-    title: "Nuestras cervezas | Santo Desvío",
-    description: "Los estilos que elaboramos en nuestra cervecería artesanal.",
-    url: "/cervezas",
+    title: "Merchandising Oficial | Santo Desvío - Cerveza Independiente",
+    description:
+      "Remeras, vasos y accesorios con el sello distintivo de nuestra fábrica.",
+    url: "https://www.santodesvio.com.ar/merch",
+    siteName: "Santo Desvío",
+    locale: "es_AR",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Merchandising Oficial Santo Desvío",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Merchandising Oficial | Santo Desvío",
+    description: "Remeras, vasos y accesorios con el sello distintivo de Santo Desvío.",
+    images: ["/og-image.jpg"],
   },
 };
 
-// Esta función ahora consulta directamente a MongoDB sin pasar por HTTP/fetch
+// Consulta directa a MongoDB sin pasar por HTTP/fetch
 async function getMerchandise() {
   try {
     const client = await clientPromise;
-    
-    // Aquí especificas el NOMBRE DE TU BASE DE DATOS en Atlas
     const db = client.db("Merch"); 
 
-    // Aquí especificas el NOMBRE DE TU COLECCIÓN
     const products = await db
       .collection("Merch") 
       .find({ category: "merchandising" })
@@ -42,8 +63,40 @@ async function getMerchandise() {
 export default async function MerchPage() {
   const products = await getMerchandise();
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Merchandising Oficial Santo Desvío",
+    description: "Catálogo de ropa y accesorios oficiales de la cervecería Santo Desvío.",
+    url: "https://www.santodesvio.com.ar/merch",
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: products.map((product, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        item: {
+          "@type": "Product",
+          name: product.name,
+          image: product.imageUrl,
+          description: product.description,
+          offers: {
+            "@type": "Offer",
+            price: product.price,
+            priceCurrency: "ARS",
+            availability: "https://schema.org/InStock",
+          },
+        },
+      })),
+    },
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <h1 className="text-4xl text-[#F2A21B] font-bold text-center mb-8 uppercase">
         Merchandising Oficial
       </h1>

@@ -1,75 +1,83 @@
-'use client';
+import EntradasForm from "@/components/Festival/entradasForm";
 
-import { useState } from 'react';
-import { useCart } from '@/context/CartContext';
-import { useRouter } from 'next/navigation';
+export const metadata = {
+  title: "Entradas | Santo Desvío Festival",
+  description:
+    "Conseguí tus entradas para el Santo Desvío Festival. Cerveza artesanal, música en vivo y gastronomía en Ituzaingó, Buenos Aires.",
+  keywords: [
+    "entradas Santo Desvío festival",
+    "festival cerveza artesanal Ituzaingó",
+    "comprar tickets Santo Desvío",
+    "eventos cerveza artesanal Buenos Aires",
+  ],
+  alternates: { canonical: "https://www.santodesvio.com.ar/entradas" },
+  openGraph: {
+    title: "Comprar Entradas | Santo Desvío Festival",
+    description:
+      "Asegurá tu lugar en el Santo Desvío Festival. Cerveza de autor, música y cultura independiente.",
+    url: "https://www.santodesvio.com.ar/entradas",
+    siteName: "Santo Desvío",
+    locale: "es_AR",
+    type: "website",
+    images: [
+      {
+        url: "/FESTIVAL.jpeg",
+        width: 1200,
+        height: 630,
+        alt: "Santo Desvío Festival — Venta de Entradas",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Entradas | Santo Desvío Festival",
+    description: "Asegurá tu lugar en el festival independiente de cerveza.",
+    images: ["/FESTIVAL.jpeg"],
+  },
+};
 
-export default function PageEntradas() {
-  const { addToCart } = useCart();
-  const router = useRouter();
-  const [quantity, setQuantity] = useState(1);
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Event",
+  name: "Santo Desvío Festival Vol. I",
+  startDate: "2026-11-20T18:00:00-03:00", // Modificá con la fecha real de tu evento
+  eventStatus: "https://schema.org/EventScheduled",
+  eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+  location: {
+    "@type": "Place",
+    name: "Fábrica Santo Desvío",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Ituzaingó",
+      addressRegion: "Buenos Aires",
+      addressCountry: "AR",
+    },
+  },
+  image: ["https://www.santodesvio.com.ar/FESTIVAL.jpeg"],
+  description: "Festival de cerveza artesanal independiente, música y gastronomía.",
+  offers: {
+    "@type": "Offer",
+    price: "30000",
+    priceCurrency: "ARS",
+    url: "https://www.santodesvio.com.ar/entradas",
+    availability: "https://schema.org/InStock",
+    validFrom: "2026-01-01T00:00:00-03:00",
+  },
+  organizer: {
+    "@type": "Organization",
+    name: "Santo Desvío",
+    url: "https://www.santodesvio.com.ar",
+  },
+};
 
-  const handleAddToCart = (e) => {
-    e.preventDefault();
-
-    const ticketItem = {
-      id: 'ticket-festival-santo-desvio',
-      name: 'Entrada Santo Desvío Festival Vol. I',
-      price: 30000,
-      image: '/FESTIVAL.jpeg',
-    };
-
-    // Agrega la cantidad exacta al carrito común
-    addToCart(ticketItem, quantity);
-
-    // Redirige al flujo estándar del carrito donde se completan los datos del pago
-    router.push('/cart');
-  };
-
+export default function EntradasPage() {
   return (
-    <div className="max-w-2xl mx-auto my-12 px-4">
-      <div className="border-2 border-[#F2A21B] bg-[#121212] p-8 text-center relative shadow-2xl">
-        <h2 className="font-santo-display text-3xl md:text-5xl text-[#F2A21B] mb-2 uppercase rotate-[-1deg]">
-          SANTO DESVÍO FESTIVAL
-        </h2>
-        <p className="font-santo-alt text-lg text-[#F0EDE4] tracking-wider uppercase mb-8">
-          Asegura tu entrada al infierno
-        </p>
-
-        <form onSubmit={handleAddToCart} className="space-y-6">
-          <div className="flex flex-col items-center justify-center pt-2">
-            <label className="block font-santo-alt text-[#F2A21B] tracking-wider uppercase mb-2">
-              Cantidad de Entradas ($30000 c/u)
-            </label>
-            <div className="flex items-center gap-4">
-              <button
-                type="button"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="w-10 h-10 bg-[#010101] border-2 border-[#F2A21B] text-[#F2A21B] font-bold text-xl hover:bg-[#F2A21B] hover:text-[#010101]"
-              >
-                -
-              </button>
-              <span className="font-santo-alt text-2xl text-[#F0EDE4] min-w-[30px]">
-                {quantity}
-              </span>
-              <button
-                type="button"
-                onClick={() => setQuantity(quantity + 1)}
-                className="w-10 h-10 bg-[#010101] border-2 border-[#F2A21B] text-[#F2A21B] font-bold text-xl hover:bg-[#F2A21B] hover:text-[#010101]"
-              >
-                +
-              </button>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-[#F2A21B] text-[#010101] font-santo-alt text-2xl py-4 uppercase font-bold tracking-widest hover:bg-[#F0EDE4] transition-colors"
-          >
-            🛒 AGREGAR AL CARRITO (${(30000 * quantity).toLocaleString('es-AR')})
-          </button>
-        </form>
-      </div>
-    </div>
+    <main className="min-h-screen bg-santo-dark flex flex-col items-center justify-center py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <EntradasForm />
+    </main>
   );
 }

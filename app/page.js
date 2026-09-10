@@ -4,15 +4,15 @@ import FabricaPage from '../components/fabrica/fabrica';
 
 export const metadata = {
   title: {
-    absolute: "Santo Desvío | Cerveza artesanal argentina",
+    absolute: "Santo Desvío | Cerveza Independiente",
   },
   description:
-    "Cervecería artesanal Santo Desvío. Elaboramos cerveza de autor en tandas chicas en [CIUDAD], [PROVINCIA]. Conocé nuestros estilos, dónde comprarlos y cómo visitarnos.",
+    "Cervecería artesanal Santo Desvío. Elaboramos cerveza de autor en tandas chicas en Ituzaingo, Provincia de Buenos Aires. Conocé nuestros estilos, dónde comprarlos y cómo visitarnos.",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Santo Desvío | Cerveza artesanal argentina",
+    title: "Santo Desvío | Cerveza Independiente",
     description:
-      "Cervecería artesanal de autor en [CIUDAD]. Nuestros estilos, puntos de venta y contacto.",
+      "Cervecería artesanal de autor en Ituzaingo, Provincia de Buenos Aires. Nuestros estilos, puntos de venta y contacto.",
     url: "/",
     type: "website",
   },

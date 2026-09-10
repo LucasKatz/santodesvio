@@ -10,7 +10,7 @@ export const metadata = {
   metadataBase: new URL("https://santodesvio.com.ar"),
 
   title: {
-    default: "Santo Desvío | Cerveza artesanal en Ituzaingó, Buenos Aires",
+    default: "Santo Desvío | Cerveza independiente en Ituzaingó, Buenos Aires",
     template: "%s | Santo Desvío",
   },
 
@@ -25,6 +25,7 @@ export const metadata = {
 
   keywords: [
     "cerveza artesanal",
+     "cerveza independiente",
     "Santo Desvío",
     "cervecería artesanal Ituzaingó",
     "cerveza artesanal Buenos Aires",
