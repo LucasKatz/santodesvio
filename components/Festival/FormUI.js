@@ -1,3 +1,4 @@
+
 export default function FestivalFormUI({ formData, onChange, onSubmit, loading, quantity = 1, onQuantityChange }) {
   return (
     <div className="max-w-2xl mx-auto my-12 px-4">

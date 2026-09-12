@@ -48,6 +48,14 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-8 font-santo-alt text-lg md:text-xl text-white tracking-wider uppercase">
             <Link href="/birras" className="hover:text-santo-ochre transition-colors">Nuestras Birras</Link>
             <Link href="/festival" className="hover:text-santo-ochre transition-colors">Eventos</Link>
+            <a 
+              href="https://forms.gle/9nAs6wXKfWrB8C6C6" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="hover:text-santo-ochre transition-colors"
+            >
+              Mayorista
+            </a>
           </div>
 
           {/* Logo Central Flotante */}
@@ -135,6 +143,15 @@ export default function Navbar() {
               >
                 Eventos
               </Link>
+              <a
+                href="https://forms.gle/9nAs6wXKfWrB8C6C6"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setIsOpen(false)}
+                className="hover:text-[#F2A21B] transition-colors py-1"
+              >
+                Mayorista
+              </a>
               <Link
                 href="/merch"
                 onClick={() => setIsOpen(false)}
