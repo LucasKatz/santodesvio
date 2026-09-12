@@ -5,7 +5,7 @@ import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
 
 // Recupera el precio base desde el archivo .env (con fallback por seguridad)
-const BASE_PRICE = Number(process.env.NEXT_PUBLIC_TICKET_PRICE) || 30000;
+const BASE_PRICE = Number(process.env.NEXT_PUBLIC_TICKET_PRICE);
 
 export default function EntradasForm() {
   const { addToCart } = useCart();
@@ -161,7 +161,7 @@ export default function EntradasForm() {
             type="submit"
             className="w-full bg-[#F2A21B] text-[#010101] font-santo-alt text-2xl py-4 uppercase font-bold tracking-widest hover:bg-[#F0EDE4] transition-colors cursor-pointer"
           >
-            🛒 AGREGAR AL CARRITO (${totalPrice.toLocaleString('es-AR')})
+             AGREGAR AL CARRITO (${totalPrice.toLocaleString('es-AR')})
           </button>
         </form>
       </div>
