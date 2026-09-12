@@ -5,7 +5,7 @@ import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
 
 // Recupera el precio base desde el archivo .env (con fallback por seguridad)
-const BASE_PRICE = Number(process.env.NEXT_PUBLIC_TICKET_PRICE);
+const BASE_PRICE = Number(process.env.NEXT_PUBLIC_TICKET_PRICE) || 40000;
 
 export default function EntradasForm() {
   const { addToCart } = useCart();
