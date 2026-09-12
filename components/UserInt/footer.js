@@ -45,7 +45,7 @@ export default function Footer() {
           <div className="w-full md:w-[40%] flex flex-col items-center text-center my-4 md:my-0">
             <Link href="/" className="inline-block relative w-48 h-48  transition-transform hover:scale-105">
               <Image
-                src="/logoFooter.jpeg"
+                src="/logoFooter2.png"
                 alt="Santo Desvío Logo"
                 fill
                 className="object-contain scale-125"
