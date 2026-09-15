@@ -17,6 +17,7 @@ export async function POST(req) {
       [process.env.DISCOUNT_CODE_FACU?.toUpperCase()]: { percentage: 25, key: 'FACU' },
       [process.env.DISCOUNT_CODE_COSLO?.toUpperCase()]: { percentage: 25, key: 'COSLO' },
       [process.env.DISCOUNT_CODE_CHUCHO?.toUpperCase()]: { percentage: 25, key: 'CHUCHO' },
+      [process.env.DISCOUNT_CODE_SANTXS?.toUpperCase()]: { percentage: 25, key: 'SANTXS' },
       
       // 50% de descuento
       [process.env.DISCOUNT_CODE_SINSA?.toUpperCase()]: { percentage: 50, key: 'SINSA' },
