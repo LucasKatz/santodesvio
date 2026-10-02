@@ -42,8 +42,8 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-8 bg-zinc-950 border border-[#D4AF37]/30 rounded-xl shadow-2xl">
-      <h2 className="text-3xl font-bold text-center text-[#D4AF37] mb-2 tracking-wide uppercase">
+    <div className="max-w-xl mx-auto p-8 bg-zinc-950 border border-[#F2A21B]/30 rounded-xl shadow-2xl">
+      <h2 className="text-3xl font-bold text-center text-[#F2A21B] mb-2 tracking-wide uppercase">
         Contacto
       </h2>
       <p className="text-zinc-400 text-center text-sm mb-6">
@@ -138,7 +138,7 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={status.loading}
-          className="w-full py-3 px-6 bg-[#D4AF37] hover:bg-[#b8972e] text-zinc-950 font-bold uppercase tracking-wider rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-lg shadow-[#D4AF37]/10"
+          className="w-full py-3 px-6 bg-[#F2A21B] hover:bg-[#b8972e] text-zinc-950 font-bold uppercase tracking-wider rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-lg shadow-[#D4AF37]/10"
         >
           {status.loading ? 'Enviando...' : 'Enviar Consulta'}
         </button>

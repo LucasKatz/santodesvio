@@ -38,13 +38,13 @@ export default function FabricaPage() {
           {/* Columna Texto / Storytelling */}
           <div className="space-y-6">
             <div className="inline-block">
-              <span className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest px-3 py-1 bg-[#D4AF37]/10 border border-[#D4AF37]/20 rounded-full">
+              <span className="text-[#F2A21B] text-xs font-bold uppercase tracking-widest px-3 py-1 bg-[#D4AF37]/10 border border-[#D4AF37]/20 rounded-full">
                 El Origen
               </span>
             </div>
 
             <h1 className="text-3xl sm:text-4xl font-extrabold text-zinc-100 tracking-tight uppercase">
-              ACA EMPEZÓ <span className="text-[#D4AF37]">EL DESVÍO</span>
+              ACA EMPEZÓ <span className="text-[#F2A21B]">EL DESVÍO</span>
             </h1>
 
             <div className="space-y-4 text-zinc-400 text-sm sm:text-base leading-relaxed">
@@ -69,11 +69,11 @@ export default function FabricaPage() {
             {/* Ficha de Valores Rápidos */}
             <div className="pt-4 grid grid-cols-2 gap-4 border-t border-zinc-800/80">
               <div>
-                <span className="block text-[#D4AF37] font-bold text-lg">100% Artesanal</span>
+                <span className="block text-[#F2A21B] font-bold text-lg">100% Artesanal</span>
                 <span className="text-zinc-500 text-xs">Sin conservantes ni filtrados industriales.</span>
               </div>
               <div>
-                <span className="block text-[#D4AF37] font-bold text-lg">Espíritu Rebelde</span>
+                <span className="block text-[#F2A21B] font-bold text-lg">Espíritu Rebelde</span>
                 <span className="text-zinc-500 text-xs">Recetas únicas nacidas del desvío.</span>
               </div>
             </div>
@@ -90,7 +90,7 @@ export default function FabricaPage() {
 
             <h2 className="text-2xl sm:text-4xl font-black text-zinc-100 tracking-wide uppercase">
               La cerveza no solo se toma, <br />
-              <span className="text-[#D4AF37]">se celebra.</span>
+              <span className="text-[#F2A21B]">se celebra.</span>
             </h2>
 
             <p className="text-zinc-300 text-base sm:text-lg italic font-light">
