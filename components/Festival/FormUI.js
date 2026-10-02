@@ -1,4 +1,4 @@
-
+/*
 export default function FestivalFormUI({ formData, onChange, onSubmit, loading, quantity = 1, onQuantityChange }) {
   return (
     <div className="max-w-2xl mx-auto my-12 px-4">
@@ -71,9 +71,8 @@ export default function FestivalFormUI({ formData, onChange, onSubmit, loading, 
                 placeholder="tuemail@ejemplo.com"
               />
             </div>
-          </div>
+          </div> 
 
-          {/* Selector de Cantidad de Entradas */}
           <div className="flex flex-col items-center justify-center pt-2">
             <label className="block font-santo-alt text-[#F2A21B] tracking-wider uppercase mb-2">
               Cantidad de Entradas ($150 c/u)
@@ -112,4 +111,4 @@ export default function FestivalFormUI({ formData, onChange, onSubmit, loading, 
       </div>
     </div>
   );
-}
+} */
