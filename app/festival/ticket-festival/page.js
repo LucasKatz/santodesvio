@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { generateTicketCode } from '@/app/services/ticketService';
+import clientPromise from '@/mongodb'; // 👈 Asegúrate de ajustar esta ruta según tu estructura
 
 export const dynamic = 'force-dynamic';
 
@@ -15,7 +16,6 @@ const transporter = nodemailer.createTransport({
 
 // Función para enviar correos con el detalle en texto plano y HTML estilizado
 async function sendTicketEmail({ email, name, lastName, ticketCode, items, amount, dni, phone }) {
-  // Construcción del desglose de productos en filas HTML
   const itemsListHtml = items && items.length > 0 
     ? items.map(item => `
         <tr>
@@ -103,6 +103,17 @@ export async function POST(req) {
     console.log(`[WEBHOOK MP] 🔍 Topic: "${topic}" | Payment ID: "${id}"`);
 
     if (topic === 'payment' && id) {
+      // 1. CONEXIÓN Y CONSULTA DE IDEMPOTENCIA EN MONGODB
+      const client = await clientPromise;
+      const db = client.db('Merch');
+      const processedCollection = db.collection('processed_payments');
+
+      const alreadyProcessed = await processedCollection.findOne({ paymentId: String(id) });
+      if (alreadyProcessed) {
+        console.log(`[WEBHOOK MP] ⚠️ El pago #${id} ya fue procesado anteriormente. Omitiendo correos.`);
+        return NextResponse.json({ message: 'Pago ya procesado' }, { status: 200 });
+      }
+
       console.log(`[WEBHOOK MP] 📡 Consultando pago ${id} a Mercado Pago...`);
 
       const response = await fetch(`https://api.mercadopago.com/v1/payments/${id}`, {
@@ -115,7 +126,8 @@ export async function POST(req) {
 
       if (!response.ok) {
         console.error('[WEBHOOK MP] ❌ Error al obtener el pago:', payment);
-        return NextResponse.json({ error: 'Error consultando MP' }, { status: 500 });
+        // Retornamos 200 para frenar bucles si Mercado Pago falla internamente
+        return NextResponse.json({ error: 'Error consultando MP' }, { status: 200 });
       }
 
       console.log(`[WEBHOOK MP] 💳 Estado devuelto: "${payment.status}"`);
@@ -130,14 +142,13 @@ export async function POST(req) {
         const phone = payment.metadata?.phone || 'Sin especificar';
         const amount = payment.transaction_amount || 0;
 
-        // Lista detallada de productos comprados desde Mercado Pago
         const purchasedItems = payment.additional_info?.items || [];
 
         console.log('[WEBHOOK MP] 📋 Datos del comprador y detalle extraídos:');
         console.log(`   - Nombre: ${name} ${lastName}`);
         console.log(`   - Cantidad de items: ${purchasedItems.length}`);
 
-        // 1. Enviar correo al comprador
+        // 2. ENVIAR CORREOS
         if (email) {
           console.log(`[WEBHOOK MP] ✉️ Enviando email con detalle al comprador (${email})...`);
           const resClient = await sendTicketEmail({
@@ -153,7 +164,6 @@ export async function POST(req) {
           console.log('[WEBHOOK MP] ✅ Email comprador enviado:', resClient.messageId);
         }
 
-        // 2. Enviar copia a la administración
         console.log('[WEBHOOK MP] ✉️ Enviando copia a santodesvio@gmail.com...');
         const resAdmin = await sendTicketEmail({
           email: 'santodesvio@gmail.com',
@@ -167,16 +177,26 @@ export async function POST(req) {
         });
         console.log('[WEBHOOK MP] ✅ Email admin enviado:', resAdmin.messageId);
 
+        // 3. REGISTRAR EL PAGO EN MONGO PARA EVITAR FUTUROS DUPLICADOS
+        await processedCollection.insertOne({
+          paymentId: String(id),
+          processedAt: new Date(),
+          customerEmail: email,
+          type: 'ticket_sale'
+        });
+
       } else {
         console.log(`[WEBHOOK MP] ℹ️ El pago ${id} no fue aprobado (Estado: ${payment.status}).`);
       }
     }
 
+    // SIEMPRE responder 200 OK a Mercado Pago para confirmar la recepción
     return NextResponse.json({ received: true }, { status: 200 });
 
   } catch (error) {
     console.error('[WEBHOOK MP] 💥 ERROR EN WEBHOOK:', error);
-    return NextResponse.json({ error: 'Webhook Internal Error' }, { status: 500 });
+    // IMPORTANTE: Responder 200 OK incluso en caso de error no contemplado
+    return NextResponse.json({ received: true, error: error.message }, { status: 200 });
   }
 }
 

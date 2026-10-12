@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
-import { generateQRCode } from '@/app/services/ticketService'; // Asegúrate de que este path sea correcto
-
+import { generateQRCode } from '@/app/services/ticketService';
+import clientPromise from '@/mongodb'; // 👈 Asegúrate de importar tu cliente de Mongo
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// A. EMAIL PARA EL CLIENTE (Con Imagen QR adjunta)
+// A. EMAIL PARA EL CLIENTE
 async function sendCustomerEmailWithQR({ email, name, lastName, qrDataUrl, paymentId, amount }) {
   const base64Data = qrDataUrl.replace(/^data:image\/png;base64,/, '');
   const qrBuffer = Buffer.from(base64Data, 'base64');
@@ -51,7 +51,7 @@ async function sendCustomerEmailWithQR({ email, name, lastName, qrDataUrl, payme
   return await transporter.sendMail(mailOptions);
 }
 
-// B. EMAIL PARA EL ADMINISTRADOR (Texto detallado como está ahora)
+// B. EMAIL PARA EL ADMINISTRADOR
 async function sendAdminEmail({ adminEmail, name, lastName, dni, phone, email, items, amount, paymentId }) {
   let itemsFormattedText = '';
   if (items && items.length > 0) {
@@ -69,10 +69,10 @@ async function sendAdminEmail({ adminEmail, name, lastName, dni, phone, email, i
 
 DATOS DEL CLIENTE:
 --------------------------------------------
-• Nombre completo: ${name} ${lastName}
-• DNI: ${dni}
-• Teléfono: ${phone}
-• Email del cliente: ${email}
+- Nombre completo: ${name} ${lastName}
+- DNI: ${dni}
+- Teléfono: ${phone}
+- Email del cliente: ${email}
 
 DETALLE DEL PEDIDO:
 --------------------------------------------
@@ -80,9 +80,9 @@ ${itemsFormattedText}
 
 RESUMEN DE PAGO:
 --------------------------------------------
-• ID Transacción MP: ${paymentId}
-• Total Abonado: $${Number(amount).toLocaleString('es-AR')} ARS
-• Estado: APROBADO
+- ID Transacción MP: ${paymentId}
+- Total Abonado: $${Number(amount).toLocaleString('es-AR')} ARS
+- Estado: APROBADO
 
 ============================================
 Santo Desvío - Sistema de Notificaciones
@@ -114,6 +114,19 @@ export async function POST(req) {
     }
 
     if (topic === 'payment' && id) {
+      // 1. CONEXIÓN Y CHECK DE NAVEGACIÓN IDEMPOTENTE EN MONGODB
+      const client = await clientPromise;
+      const db = client.db('Merch'); // Nombre de tu DB
+      const processedCollection = db.collection('processed_payments');
+
+      // Buscar si este pago ya fue procesado y enviado con éxito
+      const alreadyProcessed = await processedCollection.findOne({ paymentId: String(id) });
+      if (alreadyProcessed) {
+        console.log(`[WEBHOOK MP] ⚠️ Pago #${id} ya fue procesado anteriormente. Omitiendo mails.`);
+        return NextResponse.json({ message: 'Pago ya procesado' }, { status: 200 });
+      }
+
+      // 2. CONSULTA A MERCADO PAGO
       const response = await fetch(`https://api.mercadopago.com/v1/payments/${id}`, {
         headers: {
           Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN?.trim()}`,
@@ -133,7 +146,6 @@ export async function POST(req) {
 
         const ADMIN_EMAIL = 'santodesvio@gmail.com';
 
-        // 1. Armar el texto del desglose para la lectura del QR
         let itemsSummary = items
           .map(i => `${i.quantity || 1}x ${i.title || i.name}`)
           .join(', ');
@@ -146,10 +158,9 @@ export async function POST(req) {
           `Detalle: ${itemsSummary}\n` +
           `Total: $${amount} ARS`;
 
-        // Generar la imagen QR en Base64 con la información embebida
         const qrBase64 = await generateQRCode(qrTextPayload);
 
-        // 2. ENVIAR AL CLIENTE (con el QR)
+        // 3. ENVIAR CORREOS
         if (email) {
           await sendCustomerEmailWithQR({
             email,
@@ -161,7 +172,6 @@ export async function POST(req) {
           });
         }
 
-        // 3. ENVIAR AL ADMIN (con la planilla completa en texto)
         await sendAdminEmail({
           adminEmail: ADMIN_EMAIL,
           name,
@@ -173,14 +183,25 @@ export async function POST(req) {
           amount,
           paymentId: id
         });
+
+        // 4. GUARDAR REGISTRO EN MONGO PARA NUNCA REPETIR ESTE PAGO
+        await processedCollection.insertOne({
+          paymentId: String(id),
+          processedAt: new Date(),
+          customerEmail: email,
+        });
+
+        console.log(`[WEBHOOK MP] 🟢 Procesado correctamente y registrado en BBDD: #${id}`);
       }
     }
 
+    // SIEMPRE responder 200 a MP para frenar reintentos
     return NextResponse.json({ received: true }, { status: 200 });
 
   } catch (error) {
-    console.error('[WEBHOOK MP] Error:', error);
-    return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
+    console.error('[WEBHOOK MP] Error grave:', error);
+    // IMPORTANTE: Devolver 200 para que MP deje de spammear reintentos si falla algo no crítico
+    return NextResponse.json({ received: true, error: error.message }, { status: 200 });
   }
 }
 
