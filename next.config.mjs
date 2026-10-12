@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
-  reactCompiler: true,
+  reactStrictMode: true,
   allowedDevOrigins: ['10.160.4.110', 'localhost:3000'],
 };
 
