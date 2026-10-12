@@ -12,7 +12,7 @@
     "@emailjs/browser": "^4.4.1",
     "mongodb": "^7.6.0",
     "mongoose": "^9.9.5",
-    "next": "16.3.1",
+    "next": "^16.3.1",
     "nodemailer": "^10.0.0",
     "qrcode": "^1.5.4",
     "react": "19.2.8",
@@ -21,10 +21,11 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
-    "autoprefixer": "^10.5.4",
+    "autoprefixer": "^10.6.1",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
-    "eslint-config-next": "16.3.1",
-    "tailwindcss": "^4"
+    "eslint-config-next": "^16.3.1",
+    "postcss": "^8.5.30",
+    "tailwindcss": "^4.3.3"
   }
 }
