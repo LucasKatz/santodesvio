@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { generateQRCode } from '@/app/services/ticketService';
-import clientPromise from '@/mongodb'; // 👈 Asegúrate de importar tu cliente de Mongo
+import clientPromise from '@/mongodb';
 
 export const dynamic = 'force-dynamic';
 
@@ -69,10 +69,14 @@ async function sendAdminEmail({ adminEmail, name, lastName, dni, phone, email, i
 
 DATOS DEL CLIENTE:
 --------------------------------------------
-- Nombre completo: ${name} ${lastName}
-- DNI: ${dni}
-- Teléfono: ${phone}
-- Email del cliente: ${email}
+- Nombre completo: 
+${name} ${lastName}
+- DNI: 
+${dni}
+- Teléfono: 
+${phone}
+- Email del cliente: 
+${email}
 
 DETALLE DEL PEDIDO:
 --------------------------------------------
@@ -80,8 +84,10 @@ ${itemsFormattedText}
 
 RESUMEN DE PAGO:
 --------------------------------------------
-- ID Transacción MP: ${paymentId}
-- Total Abonado: $${Number(amount).toLocaleString('es-AR')} ARS
+- ID Transacción MP: 
+${paymentId}
+- Total Abonado: $
+${Number(amount).toLocaleString('es-AR')} ARS
 - Estado: APROBADO
 
 ============================================
@@ -114,12 +120,11 @@ export async function POST(req) {
     }
 
     if (topic === 'payment' && id) {
-      // 1. CONEXIÓN Y CHECK DE NAVEGACIÓN IDEMPOTENTE EN MONGODB
       const client = await clientPromise;
-      const db = client.db('Merch'); // Nombre de tu DB
+      const db = client.db('Merch');
       const processedCollection = db.collection('processed_payments');
 
-      // Buscar si este pago ya fue procesado y enviado con éxito
+      // 1. CHEQUEO DE IDEMPOTENCIA PREVIO
       const alreadyProcessed = await processedCollection.findOne({ paymentId: String(id) });
       if (alreadyProcessed) {
         console.log(`[WEBHOOK MP] ⚠️ Pago #${id} ya fue procesado anteriormente. Omitiendo mails.`);
@@ -136,19 +141,41 @@ export async function POST(req) {
       const payment = await response.json();
 
       if (response.ok && payment.status === 'approved') {
-        const email = payment.metadata?.email || payment.payer?.email;
+        const email = payment.metadata?.email || payment.payer?.email || '';
         const name = payment.metadata?.name || payment.payer?.first_name || 'Cliente';
         const lastName = payment.metadata?.last_name || payment.metadata?.lastName || payment.payer?.last_name || '';
         const dni = payment.metadata?.dni || 'Sin especificar';
         const phone = payment.metadata?.phone || 'Sin especificar';
         const amount = payment.transaction_amount || 0;
-        const items = payment.metadata?.cart_items || payment.additional_info?.items || [];
+        
+        const rawItems = payment.metadata?.cart_items || payment.additional_info?.items || [];
+        const items = Array.isArray(rawItems) ? rawItems : [];
 
+        // 3. REGISTRAR PRIMERO EN MONGO (PREVIENE RACE CONDITIONS MULTITHREAD/WEBHOOKS SIMULTÁNEOS)
+        try {
+          await processedCollection.insertOne({
+            paymentId: String(id),
+            processedAt: new Date(),
+            customerEmail: email,
+            amount: amount,
+            status: payment.status
+          });
+          console.log(`[WEBHOOK MP] 🟢 Registrado en MongoDB correctamente: #${id}`);
+        } catch (mongoError) {
+          // Captura el error de clave duplicada si 2 webhooks entran al mismo milisegundo
+          if (mongoError.code === 11000) {
+            console.log(`[WEBHOOK MP] ⚠️ Pago #${id} procesado por otra petición paralela. Abortando duplicados.`);
+            return NextResponse.json({ message: 'Pago en proceso por otra petición' }, { status: 200 });
+          }
+          throw mongoError;
+        }
+
+        // 4. GENERACIÓN DE QR Y ENVIÓ DE MAILS (SOLO SI EL INSERTONGO FUE EXITOSO)
         const ADMIN_EMAIL = 'santodesvio@gmail.com';
 
-        let itemsSummary = items
-          .map(i => `${i.quantity || 1}x ${i.title || i.name}`)
-          .join(', ');
+        let itemsSummary = items.length > 0
+          ? items.map(i => `${i.quantity || 1}x ${i.title || i.name || 'Producto'}`).join(', ')
+          : 'Compra general';
 
         const qrTextPayload = 
           `--- SANTO DESVÍO ---\n` +
@@ -160,47 +187,38 @@ export async function POST(req) {
 
         const qrBase64 = await generateQRCode(qrTextPayload);
 
-        // 3. ENVIAR CORREOS
-        if (email) {
-          await sendCustomerEmailWithQR({
+        // Envío paralelo para maximizar velocidad de respuesta
+        await Promise.all([
+          email ? sendCustomerEmailWithQR({
             email,
             name,
             lastName,
             qrDataUrl: qrBase64,
             paymentId: id,
             amount
-          });
-        }
+          }) : Promise.resolve(),
 
-        await sendAdminEmail({
-          adminEmail: ADMIN_EMAIL,
-          name,
-          lastName,
-          dni,
-          phone,
-          email,
-          items,
-          amount,
-          paymentId: id
-        });
+          sendAdminEmail({
+            adminEmail: ADMIN_EMAIL,
+            name,
+            lastName,
+            dni,
+            phone,
+            email,
+            items,
+            amount,
+            paymentId: id
+          })
+        ]);
 
-        // 4. GUARDAR REGISTRO EN MONGO PARA NUNCA REPETIR ESTE PAGO
-        await processedCollection.insertOne({
-          paymentId: String(id),
-          processedAt: new Date(),
-          customerEmail: email,
-        });
-
-        console.log(`[WEBHOOK MP] 🟢 Procesado correctamente y registrado en BBDD: #${id}`);
+        console.log(`[WEBHOOK MP] ✉️ Correos enviados con éxito para el pago #${id}`);
       }
     }
 
-    // SIEMPRE responder 200 a MP para frenar reintentos
     return NextResponse.json({ received: true }, { status: 200 });
 
   } catch (error) {
     console.error('[WEBHOOK MP] Error grave:', error);
-    // IMPORTANTE: Devolver 200 para que MP deje de spammear reintentos si falla algo no crítico
     return NextResponse.json({ received: true, error: error.message }, { status: 200 });
   }
 }
