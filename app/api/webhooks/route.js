@@ -121,7 +121,7 @@ export async function POST(req) {
 
     if (topic === 'payment' && id) {
       const client = await clientPromise;
-      const db = client.db('Merch');
+      const db = client.db('SantoDesvio');
       const processedCollection = db.collection('processed_payments');
 
       // 1. CHEQUEO DE IDEMPOTENCIA PREVIO
