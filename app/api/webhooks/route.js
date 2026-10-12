@@ -13,7 +13,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// A. EMAIL PARA EL CLIENTE
 async function sendCustomerEmailWithQR({ email, name, lastName, qrDataUrl, paymentId, amount }) {
   const base64Data = qrDataUrl.replace(/^data:image\/png;base64,/, '');
   const qrBuffer = Buffer.from(base64Data, 'base64');
@@ -51,7 +50,6 @@ async function sendCustomerEmailWithQR({ email, name, lastName, qrDataUrl, payme
   return await transporter.sendMail(mailOptions);
 }
 
-// B. EMAIL PARA EL ADMINISTRADOR
 async function sendAdminEmail({ adminEmail, name, lastName, dni, phone, email, items, amount, paymentId }) {
   let itemsFormattedText = '';
   if (items && items.length > 0) {
@@ -121,14 +119,24 @@ export async function POST(req) {
 
     if (topic === 'payment' && id) {
       const client = await clientPromise;
-      const db = client.db('SantoDesvio');
+      const db = client.db('Merch');
       const processedCollection = db.collection('processed_payments');
 
-      // 1. CHEQUEO DE IDEMPOTENCIA PREVIO
-      const alreadyProcessed = await processedCollection.findOne({ paymentId: String(id) });
-      if (alreadyProcessed) {
-        console.log(`[WEBHOOK MP] ⚠️ Pago #${id} ya fue procesado anteriormente. Omitiendo mails.`);
-        return NextResponse.json({ message: 'Pago ya procesado' }, { status: 200 });
+      // 1. INTENTO DE REGISTRO INMEDIATO (CANDADO DE SEGURIDAD)
+      // Si el webhook duplicado llega 1 segundo después, rebotará AQUÍ y no continuará.
+      try {
+        await processedCollection.insertOne({
+          paymentId: String(id),
+          processedAt: new Date(),
+          status: 'processing'
+        });
+      } catch (mongoError) {
+        // Código 11000 = Clave duplicada en MongoDB
+        if (mongoError.code === 11000) {
+          console.log(`[WEBHOOK MP] ⚠️ Pago #${id} ya fue procesado o está en proceso. Omitiendo duplicado.`);
+          return NextResponse.json({ message: 'Pago ya procesado' }, { status: 200 });
+        }
+        throw mongoError;
       }
 
       // 2. CONSULTA A MERCADO PAGO
@@ -151,26 +159,6 @@ export async function POST(req) {
         const rawItems = payment.metadata?.cart_items || payment.additional_info?.items || [];
         const items = Array.isArray(rawItems) ? rawItems : [];
 
-        // 3. REGISTRAR PRIMERO EN MONGO (PREVIENE RACE CONDITIONS MULTITHREAD/WEBHOOKS SIMULTÁNEOS)
-        try {
-          await processedCollection.insertOne({
-            paymentId: String(id),
-            processedAt: new Date(),
-            customerEmail: email,
-            amount: amount,
-            status: payment.status
-          });
-          console.log(`[WEBHOOK MP] 🟢 Registrado en MongoDB correctamente: #${id}`);
-        } catch (mongoError) {
-          // Captura el error de clave duplicada si 2 webhooks entran al mismo milisegundo
-          if (mongoError.code === 11000) {
-            console.log(`[WEBHOOK MP] ⚠️ Pago #${id} procesado por otra petición paralela. Abortando duplicados.`);
-            return NextResponse.json({ message: 'Pago en proceso por otra petición' }, { status: 200 });
-          }
-          throw mongoError;
-        }
-
-        // 4. GENERACIÓN DE QR Y ENVIÓ DE MAILS (SOLO SI EL INSERTONGO FUE EXITOSO)
         const ADMIN_EMAIL = 'santodesvio@gmail.com';
 
         let itemsSummary = items.length > 0
@@ -187,7 +175,7 @@ export async function POST(req) {
 
         const qrBase64 = await generateQRCode(qrTextPayload);
 
-        // Envío paralelo para maximizar velocidad de respuesta
+        // 3. ENVIAR CORREOS EN PARALELO
         await Promise.all([
           email ? sendCustomerEmailWithQR({
             email,
@@ -211,7 +199,22 @@ export async function POST(req) {
           })
         ]);
 
-        console.log(`[WEBHOOK MP] ✉️ Correos enviados con éxito para el pago #${id}`);
+        // 4. ACTUALIZAR DOCUMENTO EN MONGO CON LOS DATOS FINALES
+        await processedCollection.updateOne(
+          { paymentId: String(id) },
+          { 
+            $set: { 
+              status: 'completed', 
+              customerEmail: email, 
+              amount: amount 
+            } 
+          }
+        );
+
+        console.log(`[WEBHOOK MP] 🟢 Procesado correctamente e mails enviados: #${id}`);
+      } else {
+        // Si el pago no fue aprobado, liberamos el registro para que pueda reintentarse en el futuro
+        await processedCollection.deleteOne({ paymentId: String(id) });
       }
     }
 
