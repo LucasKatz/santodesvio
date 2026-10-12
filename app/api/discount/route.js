@@ -22,7 +22,7 @@ export async function POST(req) {
       // 50% de descuento
       [process.env.DISCOUNT_CODE_SINSA?.toUpperCase()]: { percentage: 50, key: 'SINSA' },
       [process.env.DISCOUNT_CODE_ANTO?.toUpperCase()]: { percentage: 50, key: 'ANTO' },
-      [process.env.DISCOUNT_CODE_FRAN?.toUpperCase()]: { percentage: 99, key: 'FRAN' },
+      [process.env.DISCOUNT_CODE_FRAN?.toUpperCase()]: { percentage: 50, key: 'FRAN' },
     };
 
     const match = discountRules[cleanCode];
